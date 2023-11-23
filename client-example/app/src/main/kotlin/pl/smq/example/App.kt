@@ -3,10 +3,13 @@
  */
 package pl.smq.example
 
+import pl.smq.lib.Library
+
 class App {
+    val library: Library = Library()
     val greeting: String
         get() {
-            return "Hello World!"
+            return "Hello World! ${library.someLibraryMethod()}"
         }
 }
 
