@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation("pl.smq:smq-lib:0.0.1")
+    implementation(project(":lib"))
 }
 
 testing {
