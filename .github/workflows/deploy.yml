@@ -2,10 +2,7 @@ name: Deploy to GitHub Packages
 
 on:
   push:
-    branches: [ "release" ]
     tags: [ "v*.*.*" ]
-  pull_request:
-    branches: [ "release" ]
 
 env:
   REGISTRY: ghcr.io
