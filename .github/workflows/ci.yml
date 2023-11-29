@@ -42,3 +42,4 @@ jobs:
         uses: gradle/gradle-build-action@v2.6.0
         with:
           arguments: build
+          build-root-directory: ./client
