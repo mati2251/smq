@@ -5,3 +5,5 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_executable(smq main.cpp)
+
+target_compile_options(smq PRIVATE -Wall -Wextra)
