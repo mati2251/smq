@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.10"
     `maven-publish`
@@ -34,6 +36,16 @@ publishing {
             version = "0.0.1"
 
             from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = URI("https://maven.pkg.github.com/mati2251/smq")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
