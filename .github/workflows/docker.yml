@@ -13,7 +13,7 @@ env:
 
 
 jobs:
-  login:
+  docker-build-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
