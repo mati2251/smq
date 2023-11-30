@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    ktlint("com.pinterest:ktlint:0.50.0") {
+    ktlint("com.pinterest:ktlint-cli:1.0.1") {
         attributes {
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
         }
