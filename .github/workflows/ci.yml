@@ -53,7 +53,6 @@ jobs:
         if: ${{ failure() }}
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: client/report.sarif
+          sarif_file: /work/smq/smq/client/report.sarif
           wait-for-processing: true
           category: ktlint
-          checkout_path: "/work/smq/smq/"

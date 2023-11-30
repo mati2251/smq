@@ -1,7 +1,7 @@
 package pl.smq.lib
 
-class  Library {
+class Library {
     fun someLibraryMethod(): Boolean {
         return true
     }
-   }
+}
