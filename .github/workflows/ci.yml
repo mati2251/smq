@@ -56,4 +56,4 @@ jobs:
           sarif_file: client/report.sarif
           wait-for-processing: true
           category: ktlint
-          checkout_path: "work/smq/smq"
+          checkout_path: "/work/smq/smq/"
