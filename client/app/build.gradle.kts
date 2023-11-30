@@ -29,3 +29,7 @@ java {
 application {
     mainClass.set("pl.smq.example.AppKt")
 }
+
+tasks.check {
+    dependsOn(tasks.getByPath(":ktlintCheck"))
+}

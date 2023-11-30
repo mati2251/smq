@@ -3,5 +3,4 @@ plugins {
 }
 
 rootProject.name = "smq"
-include("app", "lib")
-
+include("app", "lib", "build.gradle.kts")

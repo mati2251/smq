@@ -23,7 +23,7 @@ jobs:
 
     - name: Test
       working-directory: ${{github.workspace}}/server/build
-      run: ctest -C ${{env.BUILD_TYPE}}
+      run: ctest -C Debug
 
   client:
     runs-on: ubuntu-latest

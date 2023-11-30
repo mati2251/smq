@@ -27,7 +27,6 @@ java {
     }
 }
 
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -48,4 +47,8 @@ publishing {
             }
         }
     }
+}
+
+tasks.check {
+    dependsOn(tasks.getByPath(":ktlintCheck"))
 }
