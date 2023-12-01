@@ -29,3 +29,10 @@ java {
 application {
     mainClass.set("pl.smq.example.AppKt")
 }
+
+tasks.jar{
+    manifest {
+        attributes["Main-Class"] = "pl.smq.example.AppKt"
+        attributes["Class-Path"] = configurations.runtimeClasspath.get().asPath.split(":").joinToString(" ")
+    }
+}

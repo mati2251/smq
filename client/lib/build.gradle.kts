@@ -48,3 +48,8 @@ publishing {
         }
     }
 }
+
+java{
+    manifest{
+    }
+}
