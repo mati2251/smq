@@ -48,7 +48,3 @@ publishing {
         }
     }
 }
-
-tasks.check {
-    dependsOn(tasks.getByPath(":ktlintCheck"))
-}
