@@ -11,4 +11,4 @@ RUN <<EOF
 EOF
 ENV port 3333
 EXPOSE $port
-CMD /smq/build/smq 3333
+CMD /smq/build/smq $port
