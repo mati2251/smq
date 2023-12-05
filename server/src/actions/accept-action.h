@@ -1,3 +1,5 @@
+#pragma once
+
 #include "event-action.h"
 #include <sys/socket.h>
 
