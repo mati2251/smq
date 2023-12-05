@@ -1,7 +1,4 @@
 #include "event-loop.h"
-#include <sys/epoll.h>
-#include <iostream>
-#include "actions/accept-action.h"
 
 EventLoop::EventLoop(int &sock)
 {
@@ -31,8 +28,9 @@ void EventLoop::Run()
     while (true)
     {
         epoll_wait(this->epoll_fd, &events, 1, -1);
-        EventAction* event_action = static_cast<EventAction*>(events.data.ptr);
-        event_action->action();
+        EventAction *event_action = static_cast<EventAction *>(events.data.ptr);
+        std::thread t(&EventAction::action, event_action);
+        t.join();
     }
 }
 
