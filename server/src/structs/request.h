@@ -4,6 +4,6 @@
 
 struct request
 {
-    std::string method;
+    std::string type;
     std::string body;
 };
