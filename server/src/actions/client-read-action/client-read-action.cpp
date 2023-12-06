@@ -59,6 +59,7 @@ request ClientReadAction::getType(std::string buffer_str)
     }
     req.type = buffer_str.substr(0, new_line_index);
     req.body = buffer_str.substr(new_line_index + 1);
+    req.from = this->fd;
     return req;
 }
 

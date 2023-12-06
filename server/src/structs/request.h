@@ -6,4 +6,5 @@ struct request
 {
     std::string type;
     std::string body;
+    int from;
 };
