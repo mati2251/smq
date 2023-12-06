@@ -1,6 +1,6 @@
 #pragma once
 
-#include "event-action.h"
+#include "../event-action.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -9,7 +9,7 @@
 class AcceptAction : public EventAction
 {
 public:
-    AcceptAction(int fd, int &epoll_fd);
+    AcceptAction(int fd, int efd);
     void action();
     epoll_event& getEpollEvent();
 private:

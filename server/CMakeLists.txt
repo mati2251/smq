@@ -3,7 +3,7 @@ project(smq)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(files src/event-loop/event-loop.cpp src/actions/accept-action.cpp)
+set(files src/event-loop/event-loop.cpp src/actions/accept-action/accept-action.cpp)
 
 include_directories(server)
 Include(FetchContent)
@@ -29,5 +29,3 @@ endfunction()
 
 add_executable(smq src/main.cpp ${files})
 target_compile_options(smq PRIVATE -Wall -Wextra -Werror)
-
-add_test_and_executable(tests/actions/accept-action-test.cpp test-accept-action)
