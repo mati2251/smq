@@ -36,4 +36,5 @@ void EventLoop::Run()
 
 void EventLoop::Stop()
 {
+    close(this->epoll_fd);
 }
