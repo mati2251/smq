@@ -14,7 +14,3 @@ void ClientReadAction::action()
     epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
 }
 
-epoll_event &ClientReadAction::getEpollEvent()
-{
-    return this->ev;
-}

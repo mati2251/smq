@@ -15,6 +15,5 @@ class AcceptAction : public EventAction
 public:
     AcceptAction(int fd, int efd);
     void action();
-    epoll_event& getEpollEvent();
 private:
 };

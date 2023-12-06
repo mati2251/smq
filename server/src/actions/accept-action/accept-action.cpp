@@ -19,11 +19,6 @@ void AcceptAction::action()
     epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
 };
 
-epoll_event &AcceptAction::getEpollEvent()
-{
-    return this->ev;
-}
-
 AcceptAction::AcceptAction(int fd, int efd) : EventAction(fd, efd)
 {
     this->ev.data.ptr = this;
