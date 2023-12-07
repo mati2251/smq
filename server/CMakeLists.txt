@@ -3,7 +3,14 @@ project(smq)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(files src/event-loop/event-loop.cpp src/actions/accept-action/accept-action.cpp src/actions/client-read-action/client-read-action.cpp)
+set(files 
+    src/event-loop/event-loop.cpp 
+    src/actions/accept-action/accept-action.cpp 
+    src/actions/client-read-action/client-read-action.cpp
+    src/actions/client-write-action/client-write-action.cpp
+    src/request-handler/request-handler.cpp
+    src/request-util/request-util.cpp
+)
 
 include_directories(server)
 Include(FetchContent)

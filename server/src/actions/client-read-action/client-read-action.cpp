@@ -8,8 +8,9 @@ ClientReadAction::ClientReadAction(int fd, int efd) : EventAction(fd, efd)
 
 void ClientReadAction::action()
 {
-    readRequest();
+    request req = readRequest();
     epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
+    RequestHandler::getInstance().handleRequest(req);
 }
 
 
@@ -24,18 +25,19 @@ request ClientReadAction::readRequest()
     }
     buffer_str = req.body;
     int bracetCount = 0;
-    int limit = 0;
+    int messageSize = req.body.size();
     while (true)
     {
-        if (limit++ > MESSAGE_SIZE_KB)
-        {
-            throw InvalidRequestException();
-        }
         if (checkEndOfRequest(buffer_str, bracetCount))
         {
             break;
         }
         int size = read(this->fd, buffer, BUFFER_SIZE);
+        messageSize += size;
+        if (messageSize > MESSAGE_SIZE_KB * 1024)
+        {
+            throw InvalidRequestException();
+        }
         buffer_str = std::string(buffer, size);
         req.body += buffer_str;
     }
@@ -57,7 +59,11 @@ request ClientReadAction::getType(std::string buffer_str)
         }
         return getType(buffer_str);
     }
-    req.type = buffer_str.substr(0, new_line_index);
+    req.type = getRequestType(buffer_str.substr(0, new_line_index));
+    if (req.type == -1)
+    {
+        throw InvalidRequestException();
+    }
     req.body = buffer_str.substr(new_line_index + 1);
     req.from = this->fd;
     return req;
