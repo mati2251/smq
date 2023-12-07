@@ -8,7 +8,9 @@ set(files
     src/actions/accept-action/accept-action.cpp 
     src/actions/client-read-action/client-read-action.cpp
     src/actions/client-write-action/client-write-action.cpp
-    src/request-handler/request-handler.cpp
+    src/handlers/request-handler/request-handler.cpp
+    src/handlers/action-handler/action-handler.cpp
+    src/handlers/message-handler/message-handler.cpp
     src/request-util/request-util.cpp
 )
 

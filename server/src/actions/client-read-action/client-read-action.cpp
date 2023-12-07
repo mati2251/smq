@@ -10,7 +10,7 @@ void ClientReadAction::action()
 {
     request req = readRequest();
     epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
-    RequestHandler::getInstance().handleRequest(req);
+    RequestHandler::getInstance().handle(req);
 }
 
 
@@ -41,8 +41,6 @@ request ClientReadAction::readRequest()
         buffer_str = std::string(buffer, size);
         req.body += buffer_str;
     }
-    std::cout<<req.type<<std::endl;
-    std::cout<<req.body<<std::endl;
     return req;
 }
 

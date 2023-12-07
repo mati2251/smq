@@ -5,8 +5,8 @@
 
 #include <csignal>
 #include "../event-action.h"
+#include "../../handlers/request-handler/request-handler.h"
 #include "../../structs/request.h"
-#include "../../request-handler/request-handler.h"
 #include "../../request-util/request-util.h"
 #include "invalid-request-exception.hpp"
 
@@ -17,7 +17,6 @@ class ClientReadAction : public EventAction
     ClientReadAction(int fd, int efd);
     void action();
 private:
-    int epoll_fd;
     request readRequest();
     request getType(std::string buffer_str= "");
     bool checkEndOfRequest(std::string partRequest, int &bracetCount);
