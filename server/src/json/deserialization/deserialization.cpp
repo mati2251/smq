@@ -20,7 +20,9 @@ void findChar(const std::string &json, size_t &pos, char character)
     {
         if (!isWhiteChar(json[pos]))
         {
-            throw DeserializationException("Unexpected character " + json[pos]);
+            std::string message = "Expected character ";
+            message += json[pos];            
+            throw DeserializationException(message.c_str());
         }
         pos++;
     }
@@ -34,7 +36,9 @@ std::string findString(const std::string &json, size_t &pos)
     {
         if (!isWhiteChar(json[pos]))
         {
-            throw DeserializationException("Unexpected character " + json[pos]);
+            std::string message = "Expected character ";
+            message += json[pos];            
+            throw DeserializationException(message.c_str());
         }
         pos++;
     }
