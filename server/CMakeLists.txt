@@ -13,6 +13,7 @@ set(files
     src/handlers/message-handler/message-handler.cpp
     src/request-util/request-util.cpp
     src/json/deserialization/deserialization.cpp
+    src/json/serialization/serialization.cpp
 )
 
 include_directories(server)
@@ -30,7 +31,7 @@ include(CTest)
 include(Catch)
 
 function(add_test_and_executable src name)
-    add_executable(${name} ${src} ${files} src/json/deserialization/deserialization.cpp)
+    add_executable(${name} ${src} ${files})
     target_link_libraries(${name} PRIVATE Catch2::Catch2WithMain)
     add_test(NAME ${name} COMMAND ${name})
 endfunction()
@@ -42,3 +43,4 @@ target_compile_options(smq PRIVATE -Wall -Wextra -Werror)
 
 
 add_test_and_executable(tests/json/deserialization/deserialization-test.cpp deserialization-tests)
+add_test_and_executable(tests/json/serialization/serialization-test.cpp serialization-tests)
