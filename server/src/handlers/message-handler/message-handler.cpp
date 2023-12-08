@@ -2,8 +2,8 @@
 
 void MessageHandler::handle(request req)
 {
-    std::cout << req.body << std::endl;
-
+    message msg = deserializeMessage(req.body);
+    std::cout << "MessageHandler: " << msg.topic << " " << msg.content << std::endl;
 }
 
 void MessageHandler::setEfd(int efd)

@@ -2,7 +2,8 @@
 
 void ActionHandler::handle(request req)
 {
-    std::cout << req.body << std::endl;
+    action_topic action = deserializeAction(req.body);
+    std::cout << "ActionHandler: " << action.topic << " " << action.action << std::endl;
 }
 
 void ActionHandler::setEfd(int efd)
