@@ -12,6 +12,7 @@ EventLoop::~EventLoop()
 void EventLoop::Run()
 {
     this->epoll_fd = epoll_create1(0);
+    RequestHandler::getInstance().setEfd(this->epoll_fd);
     if (this->epoll_fd == -1)
     {
         std::cerr << "epoll_create1" << std::endl;
@@ -36,4 +37,5 @@ void EventLoop::Run()
 
 void EventLoop::Stop()
 {
+    close(this->epoll_fd);
 }

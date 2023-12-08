@@ -10,15 +10,16 @@ void AcceptAction::action()
         std::cerr << "Accept failed" << std::endl;
     }
     std::cout << "Accepted connection from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << std::endl;
-    epoll_ctl(this->epoll_fd, EPOLL_CTL_MOD, this->fd, &this->ev);
+    ClientReadAction* client_read_action = new ClientReadAction(client_fd, this->efd);
+    epoll_event ev = client_read_action->getEpollEvent();
+    if (epoll_ctl(this->efd, EPOLL_CTL_ADD, client_fd, &ev) == -1)
+    {
+        std::cerr << "Error epoll_ctl_add: " << std::strerror(errno) << std::endl;
+    }
+    epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
 };
 
-epoll_event &AcceptAction::getEpollEvent()
-{
-    return this->ev;
-}
-
-AcceptAction::AcceptAction(int fd, int &epoll_fd) : EventAction(fd), epoll_fd(epoll_fd)
+AcceptAction::AcceptAction(int fd, int efd) : EventAction(fd, efd)
 {
     this->ev.data.ptr = this;
     this->ev.events = EPOLLIN | EPOLLONESHOT;
