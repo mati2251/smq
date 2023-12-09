@@ -9,7 +9,7 @@ void AcceptAction::action()
     {
         std::cerr << "Accept failed" << std::endl;
     }
-    std::cout << "Accepted connection from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << std::endl;
+    std::cout << "Accepted connection from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << " as client " << client_fd << std::endl;
     ClientReadAction* client_read_action = new ClientReadAction(client_fd, this->efd);
     epoll_event ev = client_read_action->getEpollEvent();
     if (epoll_ctl(this->efd, EPOLL_CTL_ADD, client_fd, &ev) == -1)
