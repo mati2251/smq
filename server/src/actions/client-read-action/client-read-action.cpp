@@ -20,6 +20,7 @@ void ClientReadAction::action()
     }
     catch (InvalidRequestException &e)
     {
+        std::cout<<e.what()<<std::endl;
         closeConnection();
     }
 }
@@ -73,7 +74,7 @@ request ClientReadAction::getType(std::string buffer_str)
         throw ConnectionCloseException();
     }
     buffer_str += std::string(buffer, size);
-    std::size_t new_line_index = buffer_str.find('\n');
+    std::size_t new_line_index = buffer_str.find_first_of('\n');
     if (new_line_index == std::string::npos)
     {
         if (buffer_str.size() >= TOPIC_SIZE)
