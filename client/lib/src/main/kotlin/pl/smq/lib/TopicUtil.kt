@@ -7,25 +7,25 @@ import pl.smq.lib.models.ActionTopicType
 import pl.smq.lib.models.RequestType
 import java.io.PrintWriter
 
-class TopicUtil(private val writer: PrintWriter) {
+class TopicUtil(private val writer: PrintWriter, private val topic: String) {
     private fun action(actionTopic: ActionTopic) {
         val json = Json.encodeToJsonElement(actionTopic)
         writer.println("${RequestType.ACTION}\n$json")
     }
 
-    fun subscribe(topic: String) {
+    fun registerAsSubscriber() {
         action(ActionTopic(ActionTopicType.SUBSCRIBE, topic))
     }
 
-    fun unsubscribe(topic: String) {
+    fun unregisterAsSubscriber() {
         action(ActionTopic(ActionTopicType.UNSUBSCRIBE, topic))
     }
 
-    fun registerAsPublisher(topic: String) {
+    fun registerAsPublisher() {
         action(ActionTopic(ActionTopicType.PUBLISH, topic))
     }
 
-    fun unregisterAsPublisher(topic: String) {
+    fun unregisterAsPublisher() {
         action(ActionTopic(ActionTopicType.UNPUBLISH, topic))
     }
 }
