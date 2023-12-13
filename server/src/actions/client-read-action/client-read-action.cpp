@@ -8,19 +8,35 @@ ClientReadAction::ClientReadAction(int fd, int efd) : EventAction(fd, efd)
 
 void ClientReadAction::action()
 {
-    request req = readRequest();
-    epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
-    RequestHandler::getInstance().handle(req);
+    try
+    {
+        request req = readRequest();
+        epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
+        RequestHandler::getInstance().handle(req);
+    }
+    catch (ConnectionCloseException &e)
+    {
+        closeConnection();
+    }
+    catch (InvalidRequestException &e)
+    {
+        std::cout<<e.what()<<std::endl;
+        closeConnection();
+    }
 }
-
 
 request ClientReadAction::readRequest()
 {
     char buffer[BUFFER_SIZE];
     std::string buffer_str = "";
     request req = getType();
-    if(req.body.empty()){
+    if (req.body.empty())
+    {
         int size = read(this->fd, buffer, BUFFER_SIZE);
+        if (size == 0)
+        {
+            throw ConnectionCloseException();
+        }
         req.body = std::string(buffer, size);
     }
     buffer_str = req.body;
@@ -33,6 +49,10 @@ request ClientReadAction::readRequest()
             break;
         }
         int size = read(this->fd, buffer, BUFFER_SIZE);
+        if (size == 0)
+        {
+            throw ConnectionCloseException();
+        }
         messageSize += size;
         if (messageSize > MESSAGE_SIZE_KB * 1024)
         {
@@ -49,10 +69,16 @@ request ClientReadAction::getType(std::string buffer_str)
     request req = {};
     char buffer[TOPIC_SIZE];
     int size = read(this->fd, buffer, TOPIC_SIZE);
+    if (size == 0)
+    {
+        throw ConnectionCloseException();
+    }
     buffer_str += std::string(buffer, size);
-    std::size_t new_line_index = buffer_str.find('\n');
-    if (new_line_index == std::string::npos){
-        if (buffer_str.size() >= TOPIC_SIZE){
+    std::size_t new_line_index = buffer_str.find_first_of('\n');
+    if (new_line_index == std::string::npos)
+    {
+        if (buffer_str.size() >= TOPIC_SIZE)
+        {
             throw InvalidRequestException();
         }
         return getType(buffer_str);
@@ -90,4 +116,12 @@ bool ClientReadAction::checkEndOfRequest(std::string partRequest, int &bracetCou
         return checkEndOfRequest(partRequest.substr(left + 1), bracetCount);
     }
     throw InvalidRequestException();
+}
+
+void ClientReadAction::closeConnection()
+{
+    close(this->fd);
+    std::cout << "Close connection client " << this->fd << std::endl;
+    // TODO remove from epoll writer action with the same fd
+    epoll_ctl(this->efd, EPOLL_CTL_DEL, this->fd, &this->ev);
 }

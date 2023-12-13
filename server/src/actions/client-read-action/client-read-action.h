@@ -9,6 +9,8 @@
 #include "../../structs/request.h"
 #include "../../request-util/request-util.h"
 #include "invalid-request-exception.hpp"
+#include "connection-close-exception.hpp"
+
 
 
 class ClientReadAction : public EventAction
@@ -20,4 +22,5 @@ private:
     request readRequest();
     request getType(std::string buffer_str= "");
     bool checkEndOfRequest(std::string partRequest, int &bracetCount);
+    void closeConnection();
 };

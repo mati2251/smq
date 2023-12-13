@@ -4,6 +4,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.10"
     `maven-publish`
     `java-library`
+    kotlin("plugin.serialization") version "1.9.21"
 }
 
 repositories {
@@ -11,6 +12,8 @@ repositories {
 }
 
 dependencies {
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
 }
 
 testing {
