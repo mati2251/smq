@@ -14,11 +14,11 @@ class MessageQueueException(message: String) : RuntimeException(message)
 
 class MessageQueue(private val writer: PrintWriter, private val reader: BufferedReader, private val topic: String) {
     private val action: TopicUtil = TopicUtil(writer, topic)
-    private val isSubscriber: Boolean = false
-    private val isPublisher: Boolean = false
+    private var isSubscriber: Boolean = false
+    private var isPublisher: Boolean = false
     private var thread: Thread = Thread {
         while (true) {
-            val buffer = reader.readLine()
+            val buffer = reader.readLines().joinToString { "\n" }
             val message = Json.decodeFromString(Message.serializer(), buffer)
             messageListener.forEach { it(message) }
         }
@@ -31,25 +31,29 @@ class MessageQueue(private val writer: PrintWriter, private val reader: Buffered
             throw MessageQueueException("You are already a subscriber")
         action.registerAsSubscriber()
         thread.start()
+        this.isSubscriber = true;
     }
 
     fun unregisterAsSubscriber() {
         if (!isSubscriber)
             throw MessageQueueException("You are not a subscriber")
         action.unregisterAsSubscriber()
-        thread.interrupt()
+        this.isSubscriber = false;
+        thread.interrupt();
     }
 
     fun registerAsPublisher() {
         if (isPublisher)
             throw MessageQueueException("You are already a publisher")
         action.registerAsPublisher()
+        this.isPublisher = true;
     }
 
     fun unregisterAsPublisher() {
         if (!isPublisher)
             throw MessageQueueException("You are not a publisher")
         action.unregisterAsPublisher()
+        this.isPublisher = false;
     }
 
     fun sendMessage(content: String) {
