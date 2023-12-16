@@ -10,6 +10,7 @@ repositories {
 
 dependencies {
     implementation(project(":lib"))
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6")
 }
 
 testing {
