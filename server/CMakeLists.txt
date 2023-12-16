@@ -14,6 +14,8 @@ set(files
     src/request-util/request-util.cpp
     src/json/deserialization/deserialization.cpp
     src/json/serialization/serialization.cpp
+    src/server-state/server-state.cpp
+    src/topic/topic.cpp
 )
 
 include_directories(server)
