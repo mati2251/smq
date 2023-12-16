@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <string>
 #include "../actions/client-write-action/client-write-action.h"
+#include <mutex>
 
 class Topic
 {
@@ -15,6 +16,8 @@ public:
     bool checkIfPublisher(int fd);
     std::string getName();
 private:
+    std::mutex subscribers_mutex;
+    std::mutex publishers_mutex;
     std::string name;
     std::unordered_set<ClientWriteAction *> subscribers = {};
     std::unordered_set<int> publishers = {};

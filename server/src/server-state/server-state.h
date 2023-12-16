@@ -3,6 +3,7 @@
 #include <vector>
 #include "../topic/topic.h"
 #include "../actions/client-write-action/client-write-action.h"
+#include <mutex>
 
 class ServerState
 {
@@ -11,7 +12,9 @@ public:
     static ServerState &getInstance();
     void addClient(ClientWriteAction *client);
     Topic *getTopic(std::string name);
+    Topic *addNewTopicIfNotExists(std::string topic_name);
 private:
+    std::mutex topics_mutex;
     friend class MessageHandler;
     friend class ActionHandler;
     std::vector<Topic *> topics = {};

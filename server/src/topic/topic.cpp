@@ -7,6 +7,7 @@ Topic::Topic(std::string name)
 
 void Topic::addSubscriber(ClientWriteAction *client)
 {
+    std::lock_guard<std::mutex> lock(this->subscribers_mutex);
     for (auto c : this->subscribers)
     {
         if (c->orginal_fd == client->orginal_fd)
@@ -20,6 +21,7 @@ void Topic::addSubscriber(ClientWriteAction *client)
 
 void Topic::addPublisher(int fd)
 {
+    std::lock_guard<std::mutex> lock(this->publishers_mutex);
     for (auto client : this->subscribers)
     {
         if (client->orginal_fd == fd)
@@ -33,6 +35,7 @@ void Topic::addPublisher(int fd)
 
 void Topic::removeSubscriber(int fd)
 {
+    std::lock_guard<std::mutex> lock(this->subscribers_mutex);
     for (auto client : this->subscribers)
     {
         if (client->orginal_fd == fd)
@@ -46,6 +49,7 @@ void Topic::removeSubscriber(int fd)
 
 void Topic::removePublisher(int fd)
 {
+    std::lock_guard<std::mutex> lock(this->publishers_mutex);
     int erased = this->publishers.erase(fd);
     if (erased != 0)
     {
@@ -55,6 +59,11 @@ void Topic::removePublisher(int fd)
 
 void Topic::publish(message msg)
 {
+    std::vector<ClientWriteAction *> clients_copy = {};
+    {
+        std::lock_guard<std::mutex> lock(this->subscribers_mutex);
+        clients_copy = std::vector<ClientWriteAction *>(this->subscribers.begin(), this->subscribers.end());
+    }
     for (auto client : this->subscribers)
     {
         client->addMessage(msg);
@@ -64,6 +73,7 @@ void Topic::publish(message msg)
 
 bool Topic::checkIfPublisher(int fd)
 {
+    std::lock_guard<std::mutex> lock(this->publishers_mutex);
     for (auto client : this->publishers)
     {
         if (client == fd)

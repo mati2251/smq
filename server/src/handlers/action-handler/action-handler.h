@@ -18,6 +18,5 @@ private:
     void handleUnsubscribeAction(action_topic act);
     void handlePublishAction(action_topic act);
     void handleUnpublishAction(action_topic act);
-    Topic *addNewTopicIfNotExists(std::string topic_name);
     ClientWriteAction *getClientWriteAction(int client_id);
 };
