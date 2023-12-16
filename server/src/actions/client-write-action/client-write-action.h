@@ -1,7 +1,23 @@
 #pragma once
 
-class ClientWriteAction{
- public:
+#include <queue>
+#include "../event-action.h"
+#include <csignal>
+#include <errno.h>
+#include <string.h>
+#include "../../structs/message.h"
+#include "../../json/serialization/serialization.h"
 
- private:
+class ClientWriteAction : public EventAction
+{
+public:
+   ClientWriteAction(int fd, int efd);
+   ~ClientWriteAction();
+   void action();
+   void addToEpollIfNotExists();
+   void addMessage(message msg);
+   int orginal_fd;
+private:
+   std::queue<message> messages = {};
+   bool in_epoll = false;
 };

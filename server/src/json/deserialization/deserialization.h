@@ -8,3 +8,5 @@
 message deserializeMessage(const std::string& json);
 
 action_topic deserializeAction(const std::string& json);
+
+std::string removeWhiteChars(std::string str);

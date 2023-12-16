@@ -17,6 +17,7 @@ void AcceptAction::action()
         std::cerr << "Error epoll_ctl_add: " << std::strerror(errno) << std::endl;
     }
     epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
+    ServerState::getInstance().addClient(new ClientWriteAction(client_fd, this->efd));
 };
 
 AcceptAction::AcceptAction(int fd, int efd) : EventAction(fd, efd)

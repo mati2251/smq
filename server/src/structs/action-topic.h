@@ -5,4 +5,5 @@ struct action_topic
 {
     std::string topic;
     std::string action;
+    int from;
 };

@@ -1,14 +1,13 @@
+@file:OptIn(ExperimentalCli::class)
 package pl.smq.example
 
-import pl.smq.lib.SMQ
+import kotlinx.cli.*
 
-fun main() {
-    val smq = SMQ("localhost", 3000)
-    val messageQueue = smq.messageQueue("topic")
-    messageQueue.registerAsSubscriber()
-    messageQueue.addMessageListener { println(it) }
-    messageQueue.registerAsPublisher()
-    messageQueue.sendMessage("Hello World!")
-    messageQueue.unregisterAsPublisher()
-    messageQueue.unregisterAsSubscriber()
+@OptIn(ExperimentalCli::class)
+fun main(args: Array<String>) {
+    val parser = ArgParser("SMQ client example")
+    val subscriber = Subscriber()
+    val publisher = Publisher()
+    parser.subcommands(subscriber, publisher)
+    parser.parse(args)
 }

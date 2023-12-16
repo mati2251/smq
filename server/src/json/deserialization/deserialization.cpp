@@ -21,7 +21,7 @@ void findChar(const std::string &json, size_t &pos, char character)
         if (!isWhiteChar(json[pos]))
         {
             std::string message = "Expected character ";
-            message += json[pos];            
+            message += json[pos];
             throw DeserializationException(message.c_str());
         }
         pos++;
@@ -37,7 +37,7 @@ std::string findString(const std::string &json, size_t &pos)
         if (!isWhiteChar(json[pos]))
         {
             std::string message = "Expected character ";
-            message += json[pos];            
+            message += json[pos];
             throw DeserializationException(message.c_str());
         }
         pos++;
@@ -118,4 +118,16 @@ action_topic deserializeAction(const std::string &json)
     keyValToActionTopic(key, val, act);
     keyValToActionTopic(key2, val2, act);
     return act;
+}
+
+std::string removeWhiteChars(std::string str)
+{
+    std::string new_str = "";
+    int size = str.length();
+    for (int i = 0; i < size; i++)
+    {
+        if (!isWhiteChar(str[i]))
+            new_str += str[i];
+    }
+    return new_str;
 }

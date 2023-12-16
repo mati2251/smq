@@ -8,6 +8,8 @@
 #include <thread>
 #include "../event-action.h"
 #include "../client-read-action/client-read-action.h"
+#include "../client-write-action/client-write-action.h"
+#include "../../server-state/server-state.h"
 
 
 class AcceptAction : public EventAction

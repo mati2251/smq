@@ -20,8 +20,7 @@ void ClientReadAction::action()
     }
     catch (InvalidRequestException &e)
     {
-        std::cout<<e.what()<<std::endl;
-        closeConnection();
+        std::cout << e.what() << std::endl;
     }
 }
 
@@ -29,7 +28,7 @@ request ClientReadAction::readRequest()
 {
     char buffer[BUFFER_SIZE];
     std::string buffer_str = "";
-    request req = getType();
+    request req = getType(this->nextRequestPart);
     if (req.body.empty())
     {
         int size = read(this->fd, buffer, BUFFER_SIZE);
@@ -61,6 +60,8 @@ request ClientReadAction::readRequest()
         buffer_str = std::string(buffer, size);
         req.body += buffer_str;
     }
+    this->nextRequestPart = req.body.substr(req.body.find('}') + 1);
+
     return req;
 }
 
@@ -75,6 +76,10 @@ request ClientReadAction::getType(std::string buffer_str)
     }
     buffer_str += std::string(buffer, size);
     std::size_t new_line_index = buffer_str.find_first_of('\n');
+    if (new_line_index == 0){
+        buffer_str = buffer_str.substr(1);
+        new_line_index = buffer_str.find_first_of('\n');
+    }
     if (new_line_index == std::string::npos)
     {
         if (buffer_str.size() >= TOPIC_SIZE)
