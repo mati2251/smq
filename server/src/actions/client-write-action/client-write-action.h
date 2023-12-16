@@ -3,6 +3,8 @@
 #include <queue>
 #include "../event-action.h"
 #include <csignal>
+#include <errno.h>
+#include <string.h>
 #include "../../structs/message.h"
 #include "../../json/serialization/serialization.h"
 

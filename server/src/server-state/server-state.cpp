@@ -16,3 +16,15 @@ void ServerState::addClient(ClientWriteAction *client)
 {
     this->clients.push_back(client);
 }
+
+Topic *ServerState::getTopic(std::string name)
+{
+    for (auto topic : this->topics)
+    {
+        if (topic->getName() == name)
+        {
+            return topic;
+        }
+    }
+    return nullptr;
+}

@@ -18,9 +18,12 @@ class MessageQueue(private val writer: PrintWriter, private val reader: Buffered
     private var isPublisher: Boolean = false
     private var thread: Thread = Thread {
         while (true) {
-            val buffer = reader.readLines().joinToString { "\n" }
-            val message = Json.decodeFromString(Message.serializer(), buffer)
-            messageListener.forEach { it(message) }
+            val c = CharArray(100)
+            val size = reader.read(c)
+            if (size == -1)
+                continue
+            val buffer = String(c, 0, size)
+            println(buffer)
         }
     }
 

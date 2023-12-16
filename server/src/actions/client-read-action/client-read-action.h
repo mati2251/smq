@@ -10,6 +10,7 @@
 #include "../../request-util/request-util.h"
 #include "invalid-request-exception.hpp"
 #include "connection-close-exception.hpp"
+#include "../../json/deserialization/deserialization.h"
 
 
 
@@ -22,5 +23,6 @@ private:
     request readRequest();
     request getType(std::string buffer_str= "");
     bool checkEndOfRequest(std::string partRequest, int &bracetCount);
+    std::string nextRequestPart = ""; 
     void closeConnection();
 };

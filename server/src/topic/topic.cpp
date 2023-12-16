@@ -62,6 +62,18 @@ void Topic::publish(message msg)
     }
 }
 
+bool Topic::checkIfPublisher(int fd)
+{
+    for (auto client : this->publishers)
+    {
+        if (client == fd)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 std::string Topic::getName()
 {
     return this->name;

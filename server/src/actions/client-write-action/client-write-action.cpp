@@ -1,7 +1,5 @@
 #include "client-write-action.h"
 
-#include "client-write-action.h"
-
 ClientWriteAction::ClientWriteAction(int fd, int efd) : EventAction(dup(fd), efd)
 {
     this->ev.data.ptr = this;
@@ -16,8 +14,16 @@ ClientWriteAction::~ClientWriteAction()
 
 void ClientWriteAction::action()
 {
-    const char *buf = serializeMessage(this->messages.front()).c_str();
-    write(fd, const_cast<char *>(buf), sizeof(buf));
+    std::string msg = serializeMessage(this->messages.front());
+
+    std::cout << (serializeMessage(this->messages.front())) << std::endl;
+    int size = write(fd, const_cast<char *>(msg.c_str()), msg.size());
+    if (size == -1)
+    {
+        std::cerr << "write: ClientWriteAction" << std::endl;
+        std::cerr << strerror(errno) << std::endl;
+        return;
+    }
     this->messages.pop();
     if (this->messages.empty())
     {
@@ -33,6 +39,7 @@ void ClientWriteAction::action()
     if (err == -1)
     {
         std::cerr << "epoll_ctl: ClientWriteAction" << std::endl;
+        std::cerr << strerror(errno) << std::endl;
     }
 }
 
@@ -45,7 +52,7 @@ void ClientWriteAction::addToEpollIfNotExists()
     if (t == -1)
     {
         std::cerr << "epoll_ctl: ClientWriteAction" << std::endl;
-        perror("epoll_ctl");
+        std::cerr << strerror(errno) << std::endl;
     }
 }
 

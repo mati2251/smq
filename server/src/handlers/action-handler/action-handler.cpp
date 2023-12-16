@@ -53,6 +53,7 @@ void ActionHandler::handleUnpublishAction(action_topic act)
 {
     Topic *t = addNewTopicIfNotExists(act.topic);
     t->removePublisher(act.from);
+    std::cout << "Client " << act.from << " unregister as unpublisher from " << act.topic << std::endl;
 }
 
 Topic *ActionHandler::addNewTopicIfNotExists(std::string topic_name)

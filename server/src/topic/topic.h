@@ -12,6 +12,7 @@ public:
     void removeSubscriber(int fd);
     void removePublisher(int fd);
     void publish(message msg);
+    bool checkIfPublisher(int fd);
     std::string getName();
 private:
     std::string name;

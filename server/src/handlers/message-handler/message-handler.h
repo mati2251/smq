@@ -6,6 +6,8 @@
 #include "../../structs/message.h"
 #include "../../json/deserialization/deserialization.h"
 #include "../../actions/client-write-action/client-write-action.h"
+#include "../../server-state/server-state.h"
+#include "../../topic/topic.h"
 
 class MessageHandler : public Handler
 {

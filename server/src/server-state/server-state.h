@@ -10,6 +10,7 @@ public:
     int efd;
     static ServerState &getInstance();
     void addClient(ClientWriteAction *client);
+    Topic *getTopic(std::string name);
 private:
     friend class MessageHandler;
     friend class ActionHandler;
