@@ -1,7 +1,7 @@
 FROM archlinux
 COPY ./ /smq
 WORKDIR /smq
-RUN pacman -Syu  --noconfirm && pacman -S --noconfirm cmake make gcc
+RUN pacman -Syu  --noconfirm && pacman -S --noconfirm cmake make gcc git
 RUN <<EOF
     mkdir build \
     && cd build \
