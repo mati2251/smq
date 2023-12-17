@@ -4,13 +4,24 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
+}
+
+application {
+    mainClass = "pl.smq.example.AppKt"
 }
 
 dependencies {
     implementation(project(":lib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6")
+    implementation(kotlin("stdlib"))
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir("src/main/kotlin")
+        }
+    }
 }
 
 testing {
@@ -27,13 +38,20 @@ java {
     }
 }
 
-application {
-    mainClass.set("pl.smq.example.AppKt")
+tasks.build {
+    dependsOn(":lib:build")
 }
 
-tasks.jar{
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
     manifest {
         attributes["Main-Class"] = "pl.smq.example.AppKt"
         attributes["Class-Path"] = configurations.runtimeClasspath.get().asPath.split(":").joinToString(" ")
     }
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
 }

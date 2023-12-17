@@ -9,6 +9,6 @@ RUN <<EOF
     && make \
     && cd .. \
 EOF
-ENV port 3333
+ENV port 3000
 EXPOSE $port
 CMD /smq/build/smq $port

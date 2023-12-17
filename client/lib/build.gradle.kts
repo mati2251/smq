@@ -12,8 +12,9 @@ repositories {
 }
 
 dependencies {
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
 }
 
 testing {
@@ -52,7 +53,10 @@ publishing {
     }
 }
 
-java{
-    manifest{
+tasks.jar {
+    from(sourceSets.main.get().output)
+    manifest {
+        attributes["Class-Path"] = configurations.runtimeClasspath.get().asPath.split(":").joinToString(" ")
     }
+    dependsOn(configurations.runtimeClasspath)
 }
