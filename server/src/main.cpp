@@ -1,12 +1,13 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <csignal>
 #include "event-loop/event-loop.h"
+#include <csignal>
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) {
+    if (argc != 2)
+    {
         std::cout << "Usage: " << argv[0] << " <port>" << std::endl;
         return 1;
     }
@@ -17,8 +18,7 @@ int main(int argc, char **argv)
         .sin_family = AF_INET,
         .sin_port = htons(atoi(argv[1])),
         .sin_addr = {htonl(INADDR_ANY)},
-        .sin_zero = {0}
-        };
+        .sin_zero = {0}};
     const int one = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
     int err = bind(sock, (sockaddr *)&addr, sizeof(addr));
@@ -35,8 +35,16 @@ int main(int argc, char **argv)
     }
     std::cout << "Listening on port " << argv[1] << std::endl;
     EventLoop *loop = new EventLoop(sock);
-    loop->Run();
-    delete loop;
-    close(sock);
+    signal(SIGINT, [](int)
+           { throw std::runtime_error("SIGINT"); });
+    try
+    {
+        loop->Run();
+    }
+    catch (const std::exception &e)
+    {
+        delete loop;
+        close(sock);
+    }
     return 0;
 }

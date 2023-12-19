@@ -7,6 +7,7 @@ EventLoop::EventLoop(int &sock)
 
 EventLoop::~EventLoop()
 {
+    close(this->sock);
 }
 
 void EventLoop::Run()
