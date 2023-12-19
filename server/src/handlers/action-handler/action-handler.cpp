@@ -39,7 +39,8 @@ void ActionHandler::hanldeSubsribeAction(action_topic act)
 
 void ActionHandler::handleUnsubscribeAction(action_topic act)
 {
-    Topic *t = ServerState::getInstance().addNewTopicIfNotExists(act.topic);
+    Topic *t = ServerState::getInstance().getTopic(act.topic);
+    // todo check if topic exists
     t->removeSubscriber(act.from);
 }
 
@@ -51,9 +52,9 @@ void ActionHandler::handlePublishAction(action_topic act)
 
 void ActionHandler::handleUnpublishAction(action_topic act)
 {
-    Topic *t = ServerState::getInstance().addNewTopicIfNotExists(act.topic);
+    // todo check if topic exists
+    Topic *t = ServerState::getInstance().getTopic(act.topic);
     t->removePublisher(act.from);
-    std::cout << "Client " << act.from << " unregister as unpublisher from " << act.topic << std::endl;
 }
 
 ClientWriteAction *ActionHandler::getClientWriteAction(int client_id)

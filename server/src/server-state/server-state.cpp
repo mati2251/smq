@@ -44,14 +44,12 @@ Topic *ServerState::getTopic(std::string name)
 
 Topic *ServerState::addNewTopicIfNotExists(std::string topic_name)
 {
-    std::lock_guard<std::mutex> lock(this->topics_mutex);
-    for (auto topic : ServerState::getInstance().topics)
+    Topic *t = this->getTopic(topic_name);
+    if (t != nullptr)
     {
-        if (topic->getName() == topic_name)
-        {
-            return topic;
-        }
+        return t;
     }
+    std::lock_guard<std::mutex> lock(this->topics_mutex);
     auto topic = new Topic(topic_name);
     ServerState::getInstance().topics.push_back(topic);
     std::cout << "New topic " << topic_name << " created" << std::endl;
