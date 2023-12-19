@@ -84,6 +84,15 @@ bool Topic::checkIfPublisher(int fd)
     return false;
 }
 
+bool Topic::isEmpty()
+{
+    if (this->subscribers.size() == 0 && this->publishers.size() == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
 std::string Topic::getName()
 {
     return this->name;

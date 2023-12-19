@@ -6,6 +6,10 @@ ClientReadAction::ClientReadAction(int fd, int efd) : EventAction(fd, efd)
     this->ev.events = EPOLLIN | EPOLLONESHOT;
 }
 
+ClientReadAction::~ClientReadAction()
+{
+}
+
 void ClientReadAction::action()
 {
     try

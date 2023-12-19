@@ -14,6 +14,7 @@ public:
     void removePublisher(int fd);
     void publish(message msg);
     bool checkIfPublisher(int fd);
+    bool isEmpty();
     std::string getName();
 private:
     std::mutex subscribers_mutex;

@@ -14,6 +14,7 @@ public:
     void removeClient(int orginal_fd);
     Topic *getTopic(std::string name);
     Topic *addNewTopicIfNotExists(std::string topic_name);
+    void removeTopic(std::string name);
 private:
     std::mutex topics_mutex;
     friend class MessageHandler;
