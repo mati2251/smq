@@ -11,6 +11,7 @@ public:
     int efd;
     static ServerState &getInstance();
     void addClient(ClientWriteAction *client);
+    void removeClient(int orginal_fd);
     Topic *getTopic(std::string name);
     Topic *addNewTopicIfNotExists(std::string topic_name);
 private:

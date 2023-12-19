@@ -16,6 +16,19 @@ void ServerState::addClient(ClientWriteAction *client)
     this->clients.push_back(client);
 }
 
+void ServerState::removeClient(int orginal_fd)
+{
+    std::lock_guard<std::mutex> lock(this->topics_mutex);
+    for (auto it = this->clients.begin(); it != this->clients.end(); ++it)
+    {
+        if ((*it)->orginal_fd == orginal_fd)
+        {
+            this->clients.erase(it);
+            break;
+        }
+    }
+}
+
 Topic *ServerState::getTopic(std::string name)
 {
     std::lock_guard<std::mutex> lock(this->topics_mutex);
