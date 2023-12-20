@@ -18,6 +18,7 @@ class ClientReadAction : public EventAction
 {
     public:
     ClientReadAction(int fd, int efd);
+    virtual ~ClientReadAction();
     void action();
 private:
     request readRequest();

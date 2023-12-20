@@ -4,6 +4,8 @@
 #include "../topic/topic.h"
 #include "../actions/client-write-action/client-write-action.h"
 #include <mutex>
+#include "../topic/topic-exceptions.hpp"
+#include <exception>
 
 class ServerState
 {
@@ -11,8 +13,10 @@ public:
     int efd;
     static ServerState &getInstance();
     void addClient(ClientWriteAction *client);
+    void removeClient(int orginal_fd);
     Topic *getTopic(std::string name);
     Topic *addNewTopicIfNotExists(std::string topic_name);
+    void removeTopic(std::string name);
 private:
     std::mutex topics_mutex;
     friend class MessageHandler;

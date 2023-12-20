@@ -3,6 +3,7 @@
 #include <string>
 #include "../actions/client-write-action/client-write-action.h"
 #include <mutex>
+#include "topic-exceptions.hpp"
 
 class Topic
 {
@@ -14,6 +15,7 @@ public:
     void removePublisher(int fd);
     void publish(message msg);
     bool checkIfPublisher(int fd);
+    bool isEmpty();
     std::string getName();
 private:
     std::mutex subscribers_mutex;
