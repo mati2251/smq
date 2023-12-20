@@ -12,7 +12,7 @@ void Topic::addSubscriber(ClientWriteAction *client)
     {
         if (c->orginal_fd == client->orginal_fd)
         {
-            return;
+            throw ClientAlreadySubscriberException(client->orginal_fd, this->name);
         }
     }
     std::cout << "Client " << client->orginal_fd << " subscribed to " << this->name << std::endl;
@@ -26,7 +26,7 @@ void Topic::addPublisher(int fd)
     {
         if (client->orginal_fd == fd)
         {
-            return;
+            throw ClientAlreadyPublisherException(fd, this->name);
         }
     }
     this->publishers.insert(fd);
@@ -45,6 +45,7 @@ void Topic::removeSubscriber(int fd)
             return;
         }
     }
+    throw ClientNotSubscriberException(fd, this->name);
 }
 
 void Topic::removePublisher(int fd)
@@ -54,6 +55,10 @@ void Topic::removePublisher(int fd)
     if (erased != 0)
     {
         std::cout << "Client " << fd << " unregister as unpublisher from " << this->name << std::endl;
+    }
+    else
+    {
+        throw ClientNotPublisherException(fd, this->name);
     }
 }
 

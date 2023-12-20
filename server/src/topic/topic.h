@@ -3,6 +3,7 @@
 #include <string>
 #include "../actions/client-write-action/client-write-action.h"
 #include <mutex>
+#include "topic-exceptions.hpp"
 
 class Topic
 {

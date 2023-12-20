@@ -20,8 +20,12 @@ void ServerState::removeClient(int orginal_fd)
 {
     for (auto topic : this->topics)
     {
-        topic->removePublisher(orginal_fd);
-        topic->removeSubscriber(orginal_fd);
+        try {
+            topic->removePublisher(orginal_fd);
+        } catch (std::exception &e) {}
+        try {
+            topic->removeSubscriber(orginal_fd);
+        } catch (std::exception &e) {}
         if (topic->isEmpty())
         {
             this->removeTopic(topic->getName());

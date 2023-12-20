@@ -40,7 +40,14 @@ void ActionHandler::hanldeSubsribeAction(action_topic act)
         std::cerr << "During handle subsribe action client not found" << std::endl;
         return;
     }
-    t->addSubscriber(client);
+    try
+    {
+        t->addSubscriber(client);
+    }
+    catch (const ClientAlreadySubscriberException &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 void ActionHandler::handleUnsubscribeAction(action_topic act)
@@ -58,15 +65,22 @@ void ActionHandler::handleUnsubscribeAction(action_topic act)
     {
         std::cerr << e.what() << std::endl;
     }
+    catch (const ClientNotSubscriberException &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 void ActionHandler::handlePublishAction(action_topic act)
 {
     Topic *t = ServerState::getInstance().addNewTopicIfNotExists(act.topic);
-    t->addPublisher(act.from);
-    if (t->isEmpty())
+    try
     {
-        ServerState::getInstance().removeTopic(act.topic);
+        t->addPublisher(act.from);
+    }
+    catch (const ClientAlreadyPublisherException &e)
+    {
+        std::cerr << e.what() << std::endl;
     }
 }
 
@@ -82,6 +96,10 @@ void ActionHandler::handleUnpublishAction(action_topic act)
         }
     }
     catch (const TopicNotFoundException &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+    catch (const ClientNotPublisherException &e)
     {
         std::cerr << e.what() << std::endl;
     }
