@@ -47,21 +47,23 @@ Topic *ServerState::getTopic(std::string name)
             return topic;
         }
     }
-    return nullptr;
+    throw TopicNotFoundException(name);
 }
 
 Topic *ServerState::addNewTopicIfNotExists(std::string topic_name)
 {
-    Topic *t = this->getTopic(topic_name);
-    if (t != nullptr)
+    try
     {
-        return t;
+        return this->getTopic(topic_name);
     }
-    std::lock_guard<std::mutex> lock(this->topics_mutex);
-    auto topic = new Topic(topic_name);
-    ServerState::getInstance().topics.push_back(topic);
-    std::cout << "New topic " << topic_name << " created" << std::endl;
-    return topic;
+    catch (const TopicNotFoundException &e)
+    {
+        std::lock_guard<std::mutex> lock(this->topics_mutex);
+        auto topic = new Topic(topic_name);
+        ServerState::getInstance().topics.push_back(topic);
+        std::cout << "New topic " << topic_name << " created" << std::endl;
+        return topic;
+    }
 }
 
 void ServerState::removeTopic(std::string name)

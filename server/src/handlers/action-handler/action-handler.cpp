@@ -34,17 +34,29 @@ void ActionHandler::setEfd(int efd)
 void ActionHandler::hanldeSubsribeAction(action_topic act)
 {
     Topic *t = ServerState::getInstance().addNewTopicIfNotExists(act.topic);
-    t->addSubscriber(getClientWriteAction(act.from));
+    auto client = getClientWriteAction(act.from);
+    if (client == nullptr)
+    {
+        std::cerr << "During handle subsribe action client not found" << std::endl;
+        return;
+    }
+    t->addSubscriber(client);
 }
 
 void ActionHandler::handleUnsubscribeAction(action_topic act)
 {
-    Topic *t = ServerState::getInstance().getTopic(act.topic);
-    // todo check if topic exists
-    t->removeSubscriber(act.from);
-    if (t->isEmpty())
+    try
     {
-        ServerState::getInstance().removeTopic(act.topic);
+        Topic *t = ServerState::getInstance().getTopic(act.topic);
+        t->removeSubscriber(act.from);
+        if (t->isEmpty())
+        {
+            ServerState::getInstance().removeTopic(act.topic);
+        }
+    }
+    catch (const TopicNotFoundException &e)
+    {
+        std::cerr << e.what() << std::endl;
     }
 }
 
@@ -60,10 +72,19 @@ void ActionHandler::handlePublishAction(action_topic act)
 
 void ActionHandler::handleUnpublishAction(action_topic act)
 {
-    // todo check if topic exists
-    Topic *t = ServerState::getInstance().getTopic(act.topic);
-    t->removePublisher(act.from);
-    
+    try
+    {
+        Topic *t = ServerState::getInstance().getTopic(act.topic);
+        t->removePublisher(act.from);
+        if (t->isEmpty())
+        {
+            ServerState::getInstance().removeTopic(act.topic);
+        }
+    }
+    catch (const TopicNotFoundException &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 ClientWriteAction *ActionHandler::getClientWriteAction(int client_id)
