@@ -22,8 +22,12 @@ void ClientReadAction::action()
     {
         closeConnection();
     }
-    catch (InvalidRequestException &e)
+    catch (std::exception &e)
     {
+        RequestHandler::getInstance().handle(response{
+                                                 .code = response_code::INVALID_REQUEST,
+                                                 .message = e.what()},
+                                             this->fd);
         std::cout << e.what() << std::endl;
     }
 }
@@ -80,7 +84,8 @@ request ClientReadAction::getType(std::string buffer_str)
     }
     buffer_str += std::string(buffer, size);
     std::size_t new_line_index = buffer_str.find_first_of('\n');
-    if (new_line_index == 0){
+    if (new_line_index == 0)
+    {
         buffer_str = buffer_str.substr(1);
         new_line_index = buffer_str.find_first_of('\n');
     }

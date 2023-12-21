@@ -16,6 +16,7 @@ set(files
     src/json/serialization/serialization.cpp
     src/server-state/server-state.cpp
     src/topic/topic.cpp
+    src/handlers/response-handler/response-handler.cpp
 )
 
 include_directories(server)

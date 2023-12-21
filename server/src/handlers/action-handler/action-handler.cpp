@@ -22,7 +22,7 @@ void ActionHandler::handle(request req)
     }
     else
     {
-        throw ActionException();
+        throw ActionUnknownException();
     }
 }
 

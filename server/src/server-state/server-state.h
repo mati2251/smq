@@ -21,6 +21,7 @@ private:
     std::mutex topics_mutex;
     friend class MessageHandler;
     friend class ActionHandler;
+    friend class ResponseHandler;
     std::vector<Topic *> topics = {};
     std::vector<ClientWriteAction *> clients = {};
     static ServerState *instance;
