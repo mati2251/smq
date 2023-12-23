@@ -49,6 +49,7 @@ void ResponseHandler::handle(response res, int fd)
         if (client->orginal_fd == fd)
         {
             client->addResponse(res);
+            client->addToEpollIfNotExists();
         }
     }
 }
