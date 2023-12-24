@@ -32,11 +32,15 @@ void EventLoop::Run()
         epoll_wait(this->epoll_fd, &events, 1, -1);
         EventAction *event_action = static_cast<EventAction *>(events.data.ptr);
         std::thread t(&EventAction::action, event_action);
-        t.join();
+        this->threads.push_back(std::move(t));
     }
 }
 
 void EventLoop::Stop()
 {
     close(this->epoll_fd);
+    for (auto &t : this->threads)
+    {
+        t.detach();
+    }
 }
