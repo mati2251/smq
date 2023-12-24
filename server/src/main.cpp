@@ -4,6 +4,13 @@
 #include "event-loop/event-loop.h"
 #include <csignal>
 
+static EventLoop *loop;
+
+static void sigint_handler(int)
+{
+    loop->Stop();
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 2)
@@ -18,7 +25,7 @@ int main(int argc, char **argv)
         .sin_family = AF_INET,
         .sin_port = htons(atoi(argv[1])),
         .sin_addr = {htonl(INADDR_ANY)},
-        .sin_zero = {0}};
+    };
     const int one = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
     int err = bind(sock, (sockaddr *)&addr, sizeof(addr));
@@ -34,17 +41,8 @@ int main(int argc, char **argv)
         return 1;
     }
     std::cout << "Listening on port " << argv[1] << std::endl;
-    EventLoop *loop = new EventLoop(sock);
-    signal(SIGINT, [](int)
-           { throw std::runtime_error("SIGINT"); });
-    try
-    {
-        loop->Run();
-    }
-    catch (const std::exception &e)
-    {
-        delete loop;
-        close(sock);
-    }
+    loop = new EventLoop(sock);
+    signal(SIGINT, sigint_handler);
+    loop->Run();
     return 0;
 }
