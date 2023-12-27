@@ -2,23 +2,22 @@
 
 void ActionHandler::handle(request req)
 {
-    action_topic action = deserializeAction(req.body);
-    action.from = req.from;
-    if (action.action == "SUBSCRIBE")
+    std::string action_type = req.body.substr(0, req.body.find("\n\n"));
+    if (action_type == "SUBSCRIBE")
     {
-        this->hanldeSubsribeAction(action);
+        this->hanldeSubsribeAction(req);
     }
-    else if (action.action == "UNSUBSCRIBE")
+    else if (action_type == "UNSUBSCRIBE")
     {
-        this->handleUnsubscribeAction(action);
+        this->handleUnsubscribeAction(req);
     }
-    else if (action.action == "PUBLISH")
+    else if (action_type == "PUBLISH")
     {
-        this->handlePublishAction(action);
+        this->handlePublishAction(req);
     }
-    else if (action.action == "UNPUBLISH")
+    else if (action_type == "UNPUBLISH")
     {
-        this->handleUnpublishAction(action);
+        this->handleUnpublishAction(req);
     }
     else
     {
@@ -31,7 +30,7 @@ void ActionHandler::setEfd(int efd)
     this->efd = efd;
 }
 
-void ActionHandler::hanldeSubsribeAction(action_topic act)
+void ActionHandler::hanldeSubsribeAction(request act)
 {
     Topic *t = ServerState::getInstance().addNewTopicIfNotExists(act.topic);
     auto client = getClientWriteAction(act.from);
@@ -50,7 +49,7 @@ void ActionHandler::hanldeSubsribeAction(action_topic act)
     }
 }
 
-void ActionHandler::handleUnsubscribeAction(action_topic act)
+void ActionHandler::handleUnsubscribeAction(request act)
 {
     try
     {
@@ -71,7 +70,7 @@ void ActionHandler::handleUnsubscribeAction(action_topic act)
     }
 }
 
-void ActionHandler::handlePublishAction(action_topic act)
+void ActionHandler::handlePublishAction(request act)
 {
     Topic *t = ServerState::getInstance().addNewTopicIfNotExists(act.topic);
     try
@@ -84,7 +83,7 @@ void ActionHandler::handlePublishAction(action_topic act)
     }
 }
 
-void ActionHandler::handleUnpublishAction(action_topic act)
+void ActionHandler::handleUnpublishAction(request act)
 {
     try
     {

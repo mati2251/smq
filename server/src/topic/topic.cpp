@@ -62,7 +62,7 @@ void Topic::removePublisher(int fd)
     }
 }
 
-void Topic::publish(message msg)
+void Topic::publish(request msg)
 {
     std::vector<ClientWriteAction *> clients_copy = {};
     {

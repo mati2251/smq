@@ -4,6 +4,8 @@ ClientReadAction::ClientReadAction(int fd, int efd) : EventAction(fd, efd)
 {
     this->ev.data.ptr = this;
     this->ev.events = EPOLLIN | EPOLLONESHOT;
+    int flags = fcntl(this->fd, F_GETFL, 0);
+    fcntl(this->fd, F_SETFL, flags | O_NONBLOCK);
 }
 
 ClientReadAction::~ClientReadAction()
@@ -14,9 +16,18 @@ void ClientReadAction::action()
 {
     try
     {
-        request req = readRequest();
-        epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
-        RequestHandler::getInstance().handle(req);
+        readRequest();
+        if (checkEndOfRequest())
+        {
+            std::string request = buffer.substr(0, buffer.find_first_of("\n\n") + 2);
+            buffer = buffer.substr(buffer.find_first_of("\n\n") + 2);
+            int err = epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
+            if (err == -1)
+            {
+                throw std::runtime_error("Epoll ctl mod error");
+            }
+            RequestHandler::getInstance().handle(request, this->fd);
+        }
     }
     catch (ConnectionCloseException &e)
     {
@@ -24,108 +35,29 @@ void ClientReadAction::action()
     }
     catch (std::exception &e)
     {
-        RequestHandler::getInstance().handle(response{
-                                                 .code = response_code::INVALID_REQUEST,
-                                                 .message = e.what()},
-                                             this->fd);
-        std::cout << e.what() << std::endl;
+        std::cout << "Error: " << e.what() << std::endl;
+        closeConnection();
     }
 }
 
-request ClientReadAction::readRequest()
+void ClientReadAction::readRequest()
 {
-    char buffer[BUFFER_SIZE];
-    std::string buffer_str = "";
-    request req = getType(this->nextRequestPart);
-    if (req.body.empty())
-    {
-        int size = read(this->fd, buffer, BUFFER_SIZE);
-        if (size == 0)
-        {
-            throw ConnectionCloseException();
-        }
-        req.body = std::string(buffer, size);
-    }
-    buffer_str = req.body;
-    int bracetCount = 0;
-    int messageSize = req.body.size();
-    while (true)
-    {
-        if (checkEndOfRequest(buffer_str, bracetCount))
-        {
-            break;
-        }
-        int size = read(this->fd, buffer, BUFFER_SIZE);
-        if (size == 0)
-        {
-            throw ConnectionCloseException();
-        }
-        messageSize += size;
-        if (messageSize > MESSAGE_SIZE_KB * 1024)
-        {
-            throw InvalidRequestException();
-        }
-        buffer_str = std::string(buffer, size);
-        req.body += buffer_str;
-    }
-    this->nextRequestPart = req.body.substr(req.body.find('}') + 1);
-
-    return req;
-}
-
-request ClientReadAction::getType(std::string buffer_str)
-{
-    request req = {};
-    char buffer[TOPIC_SIZE];
-    int size = read(this->fd, buffer, TOPIC_SIZE);
-    if (size == 0)
+    char buf[BUFFER_SIZE];
+    int n = read(this->fd, buf, BUFFER_SIZE);
+    if (n == 0)
     {
         throw ConnectionCloseException();
     }
-    buffer_str += std::string(buffer, size);
-    std::size_t new_line_index = buffer_str.find_first_of('\n');
-    if (new_line_index == 0)
+    else if (n < 0)
     {
-        buffer_str = buffer_str.substr(1);
-        new_line_index = buffer_str.find_first_of('\n');
+        return;
     }
-    if (new_line_index == std::string::npos)
-    {
-        if (buffer_str.size() >= TOPIC_SIZE)
-        {
-            throw InvalidRequestException();
-        }
-        return getType(buffer_str);
-    }
-    req.type = getRequestType(buffer_str.substr(0, new_line_index));
-    req.body = buffer_str.substr(new_line_index + 1);
-    req.from = this->fd;
-    return req;
+    buffer += std::string(buf, n);
 }
 
-bool ClientReadAction::checkEndOfRequest(std::string partRequest, int &bracetCount)
+bool ClientReadAction::checkEndOfRequest()
 {
-    size_t left = partRequest.find('{');
-    size_t right = partRequest.find('}');
-    if (left == std::string::npos && right == std::string::npos)
-    {
-        return false;
-    }
-    else if (left > right)
-    {
-        bracetCount--;
-        if (bracetCount == 0)
-        {
-            return true;
-        }
-        return checkEndOfRequest(partRequest.substr(right + 1), bracetCount);
-    }
-    else if (left < right)
-    {
-        bracetCount++;
-        return checkEndOfRequest(partRequest.substr(left + 1), bracetCount);
-    }
-    throw InvalidRequestException();
+    return buffer.find("\n\n") != std::string::npos;
 }
 
 void ClientReadAction::closeConnection()

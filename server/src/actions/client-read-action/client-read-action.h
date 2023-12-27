@@ -10,8 +10,7 @@
 #include "../../request-util/request-util.h"
 #include "invalid-request-exception.hpp"
 #include "connection-close-exception.hpp"
-#include "../../json/deserialization/deserialization.h"
-
+#include <fcntl.h>
 
 
 class ClientReadAction : public EventAction
@@ -21,9 +20,8 @@ class ClientReadAction : public EventAction
     virtual ~ClientReadAction();
     void action();
 private:
-    request readRequest();
-    request getType(std::string buffer_str= ""); 
-    bool checkEndOfRequest(std::string partRequest, int &bracetCount);
-    std::string nextRequestPart = ""; 
+    std::string buffer;
+    void readRequest();
+    bool checkEndOfRequest();
     void closeConnection();
 };

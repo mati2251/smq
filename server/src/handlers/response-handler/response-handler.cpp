@@ -2,42 +2,51 @@
 
 void ResponseHandler::handle(request req)
 {
-    response res = { .code = response_code::SUCCESS, .message = "" };
+    response res = {.code = response_code::SUCCESS, .request_id = req.id, .message = ""};
     this->handle(res, req.from);
 }
 
 void ResponseHandler::handle(request req, std::exception &e)
 {
     response res;
-    try {
+    res.code = response_code::UNKNOWN_ERROR;
+    res.request_id = req.id;
+    res.message = e.what();
+    try
+    {
         throw e;
     }
-    catch (InvalidRequestException &_){
-        res = { .code = response_code::INVALID_REQUEST, .message = e.what() };
+    catch (InvalidRequestException &_)
+    {
+        res.code = response_code::INVALID_REQUEST;
     }
-    catch (ActionUnknownException &_){
-        res = { .code = response_code::ACTION_UNKNOWN, .message = e.what() };
+    catch (ActionUnknownException &_)
+    {
+        res.code = response_code::ACTION_UNKNOWN;
     }
-    catch (DeserializationException &_){
-        res = { .code = response_code::INVALID_REQUEST, .message = e.what() };
+    catch (ClientAlreadySubscriberException &_)
+    {
+        res.code = response_code::CLIENT_ALREADY_SUBSCRIBER;
     }
-    catch (ClientAlreadySubscriberException &_){
-        res = { .code = response_code::CLIENT_ALREADY_SUBSCRIBER, .message = e.what() };
+    catch (ClientAlreadyPublisherException &_)
+    {
+        res.code = response_code::CLIENT_ALREADY_PUBLISHER;
     }
-    catch (ClientAlreadyPublisherException &_){
-        res = { .code = response_code::CLIENT_ALREADY_PUBLISHER, .message = e.what() };
+    catch (TopicNotFoundException &_)
+    {
+        res.code = response_code::TOPIC_NOT_FOUND;
     }
-    catch (TopicNotFoundException &_){
-        res = { .code = response_code::TOPIC_NOT_FOUND, .message = e.what() };
+    catch (ClientNotSubscriberException &_)
+    {
+        res.code = response_code::CLIENT_NOT_SUBSCRIBER;
     }
-    catch (ClientNotSubscriberException &_){
-        res = { .code = response_code::CLIENT_NOT_SUBSCRIBER, .message = e.what() };
+    catch (ClientNotPublisherException &_)
+    {
+        res.code = response_code::CLIENT_NOT_PUBLISHER;
     }
-    catch (ClientNotPublisherException &_){
-        res = { .code = response_code::CLIENT_NOT_PUBLISHER, .message = e.what() };
-    }
-    catch (std::exception &_){
-        res = { .code = response_code::UNKNOWN_ERROR, .message = e.what() };
+    catch (std::exception &_)
+    {
+        res.code = response_code::UNKNOWN_ERROR;
     }
     this->handle(res, req.from);
 }

@@ -18,6 +18,13 @@ RequestHandler &RequestHandler::getInstance()
     return *instance;
 }
 
+void RequestHandler::handle(std::string req_str, int from)
+{
+    request req = deserializeRequest(req_str);
+    req.from = from;
+    this->handle(req);
+}
+
 void RequestHandler::handle(request req)
 {
     try

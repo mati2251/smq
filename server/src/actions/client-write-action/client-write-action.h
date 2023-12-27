@@ -5,9 +5,10 @@
 #include <csignal>
 #include <errno.h>
 #include <string.h>
-#include "../../structs/message.h"
-#include "../../json/serialization/serialization.h"
 #include <mutex>
+#include "../../structs/request.h"
+#include "../../structs/response.h"
+#include "../../request-util/serialization/serialization.h"
 
 class ClientWriteAction : public EventAction
 {
@@ -16,14 +17,11 @@ public:
    ~ClientWriteAction();
    void action();
    void addToEpollIfNotExists();
-   void addMessage(message msg);
+   void addMessage(request req);
    void addResponse(response res);
-   template <typename T> void send(std::queue<T> &q, std::mutex &mtx);
    int orginal_fd;
 private:
-   std::mutex messages_mtx;
-   std::mutex responses_mtx;
-   std::queue<message> messages = {};
-   std::queue<response> responses = {};
+   std::mutex data_mtx;
+   std::deque<std::string> data_to_send = {};
    bool in_epoll = false;
 };

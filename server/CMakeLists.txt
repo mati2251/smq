@@ -12,8 +12,8 @@ set(files
     src/handlers/action-handler/action-handler.cpp
     src/handlers/message-handler/message-handler.cpp
     src/request-util/request-util.cpp
-    src/json/deserialization/deserialization.cpp
-    src/json/serialization/serialization.cpp
+    src/request-util/deserialization/deserialization.cpp
+    src/request-util/serialization/serialization.cpp
     src/server-state/server-state.cpp
     src/topic/topic.cpp
     src/handlers/response-handler/response-handler.cpp
