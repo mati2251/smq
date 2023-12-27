@@ -6,6 +6,7 @@ enum request_type
 {
     ACTION,
     MESSAGE,
+    INVALID
 };
 
 
