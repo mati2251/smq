@@ -44,7 +44,7 @@ void ClientWriteAction::send(std::queue<T> &q, std::mutex &mtx)
         if (this->messages.empty() && this->responses.empty())
         {
             this->in_epoll = false;
-            int err = epoll_ctl(this->efd, EPOLL_CTL_DEL, this->fd, &this->ev);
+            int err = epoll_ctl(this->efd, EPOLL_CTL_DEL, this->fd, nullptr);
             if (err == -1)
             {
                 std::cerr << "epoll_ctl: ClientWriteAction" << std::endl;

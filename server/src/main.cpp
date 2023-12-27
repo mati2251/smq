@@ -25,6 +25,7 @@ int main(int argc, char **argv)
         .sin_family = AF_INET,
         .sin_port = htons(atoi(argv[1])),
         .sin_addr = {htonl(INADDR_ANY)},
+        .sin_zero = {0}
     };
     const int one = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));

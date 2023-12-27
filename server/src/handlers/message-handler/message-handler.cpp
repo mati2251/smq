@@ -7,7 +7,6 @@ void MessageHandler::handle(request req)
     if (!topic->checkIfPublisher(req.from))
     {
         throw ClientNotPublisherException(req.from, msg.topic);
-        return;
     }
     topic->publish(msg);
     std::cout << "Message received from " << req.from << " to topic " << msg.topic << std::endl;
