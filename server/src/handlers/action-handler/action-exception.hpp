@@ -1,9 +1,9 @@
 #pragma once
 #include <exception>
 
-class ActionException : public std::exception {
+class ActionUnknownException : public std::exception {
     public:
-    ActionException() {}
+    ActionUnknownException() {}
     const char *what() const throw() {
         return "Action exception: Unknown action";
     }

@@ -32,8 +32,8 @@ class MessageQueue(private val writer: PrintWriter, private val reader: Buffered
     fun registerAsSubscriber() {
         if (isSubscriber)
             throw MessageQueueException("You are already a subscriber")
-        action.registerAsSubscriber()
         thread.start()
+        action.registerAsSubscriber()
         this.isSubscriber = true;
     }
 
@@ -43,11 +43,14 @@ class MessageQueue(private val writer: PrintWriter, private val reader: Buffered
         action.unregisterAsSubscriber()
         this.isSubscriber = false;
         thread.interrupt();
+        if (!isPublisher)
+            thread.interrupt();
     }
 
     fun registerAsPublisher() {
         if (isPublisher)
             throw MessageQueueException("You are already a publisher")
+        thread.start()
         action.registerAsPublisher()
         this.isPublisher = true;
     }
@@ -57,6 +60,8 @@ class MessageQueue(private val writer: PrintWriter, private val reader: Buffered
             throw MessageQueueException("You are not a publisher")
         action.unregisterAsPublisher()
         this.isPublisher = false;
+        if (!isSubscriber)
+            thread.interrupt();
     }
 
     fun sendMessage(content: String) {

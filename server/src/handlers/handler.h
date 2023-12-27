@@ -1,4 +1,5 @@
 #pragma once
+#include "../structs/request.h"
 
 class Handler
 {
