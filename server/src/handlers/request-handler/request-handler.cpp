@@ -30,6 +30,8 @@ void RequestHandler::handle(request req)
         case request_type::MESSAGE:
             this->messageHandler->handle(req);
             break;
+        case request_type::INVALID:
+            throw InvalidRequestException();
         }
         this->responseHandler->handle(req);
     }

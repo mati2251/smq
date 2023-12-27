@@ -22,7 +22,7 @@ class ClientReadAction : public EventAction
     void action();
 private:
     request readRequest();
-    request getType(std::string buffer_str= "");
+    request getType(std::string buffer_str= ""); 
     bool checkEndOfRequest(std::string partRequest, int &bracetCount);
     std::string nextRequestPart = ""; 
     void closeConnection();

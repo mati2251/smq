@@ -98,10 +98,6 @@ request ClientReadAction::getType(std::string buffer_str)
         return getType(buffer_str);
     }
     req.type = getRequestType(buffer_str.substr(0, new_line_index));
-    if (req.type == request_type::INVALID )
-    {
-        throw InvalidRequestException();
-    }
     req.body = buffer_str.substr(new_line_index + 1);
     req.from = this->fd;
     return req;

@@ -13,6 +13,8 @@ enum request_type
 struct request
 {
     request_type type;
+    int id;
+    std::string topic;
     std::string body;
     int from;
 };
