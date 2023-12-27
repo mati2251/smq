@@ -36,14 +36,14 @@ void ServerState::removeClient(int orginal_fd)
         if ((*it)->orginal_fd == orginal_fd)
         {
             this->clients.erase(it);
+            delete *it;
             break;
         }
     }
 }
 
-Topic *ServerState::getTopic(std::string name)
+Topic *ServerState::getTopicWithoutLock(std::string name)
 {
-    std::lock_guard<std::mutex> lock(this->topics_mutex);
     for (auto topic : this->topics)
     {
         if (topic->getName() == name)
@@ -54,15 +54,21 @@ Topic *ServerState::getTopic(std::string name)
     throw TopicNotFoundException(name);
 }
 
+Topic *ServerState::getTopic(std::string name)
+{
+    std::lock_guard<std::mutex> lock(this->topics_mutex);
+    return this->getTopicWithoutLock(name);
+}
+
 Topic *ServerState::addNewTopicIfNotExists(std::string topic_name)
 {
+    std::lock_guard<std::mutex> lock(this->topics_mutex);
     try
     {
-        return this->getTopic(topic_name);
+        return this->getTopicWithoutLock(topic_name);
     }
     catch (const TopicNotFoundException &e)
     {
-        std::lock_guard<std::mutex> lock(this->topics_mutex);
         auto topic = new Topic(topic_name);
         ServerState::getInstance().topics.push_back(topic);
         std::cout << "New topic " << topic_name << " created" << std::endl;

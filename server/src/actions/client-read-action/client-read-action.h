@@ -1,7 +1,5 @@
 #pragma once
 #define BUFFER_SIZE 1024
-#define TOPIC_SIZE 100
-#define MESSAGE_SIZE_KB 100
 
 #include <csignal>
 #include "../event-action.h"

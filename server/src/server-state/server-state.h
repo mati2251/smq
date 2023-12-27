@@ -29,4 +29,5 @@ private:
     ~ServerState() = default;
     ServerState(const ServerState &) = delete;
     ServerState &operator=(const ServerState &) = delete;
+    Topic *getTopicWithoutLock(std::string name);
 };

@@ -8,12 +8,11 @@ Topic::Topic(std::string name)
 void Topic::addSubscriber(ClientWriteAction *client)
 {
     std::lock_guard<std::mutex> lock(this->subscribers_mutex);
-    for (auto c : this->subscribers)
+    auto it = std::find_if(this->subscribers.begin(), this->subscribers.end(), [client](const auto &c)
+                           { return c->orginal_fd == client->orginal_fd; });
+    if (it != this->subscribers.end())
     {
-        if (c->orginal_fd == client->orginal_fd)
-        {
-            throw ClientAlreadySubscriberException(client->orginal_fd, this->name);
-        }
+        throw ClientAlreadySubscriberException(client->orginal_fd, this->name);
     }
     std::cout << "Client " << client->orginal_fd << " subscribed to " << this->name << std::endl;
     this->subscribers.insert(client);
@@ -22,30 +21,17 @@ void Topic::addSubscriber(ClientWriteAction *client)
 void Topic::addPublisher(int fd)
 {
     std::lock_guard<std::mutex> lock(this->publishers_mutex);
-    for (auto client : this->subscribers)
-    {
-        if (client->orginal_fd == fd)
-        {
-            throw ClientAlreadyPublisherException(fd, this->name);
-        }
-    }
-    this->publishers.insert(fd);
+    this->publishers.count(fd) == 0 ? this->publishers.insert(fd) : throw ClientAlreadyPublisherException(fd, this->name);  
     std::cout << "Client " << fd << " register as publisher to " << this->name << std::endl;
 }
 
 void Topic::removeSubscriber(int fd)
 {
     std::lock_guard<std::mutex> lock(this->subscribers_mutex);
-    for (auto client : this->subscribers)
-    {
-        if (client->orginal_fd == fd)
-        {
-            this->subscribers.erase(client);
-            std::cout << "Client " << fd << " unsubscribed from " << this->name << std::endl;
-            return;
-        }
-    }
-    throw ClientNotSubscriberException(fd, this->name);
+    int erased = erase_if(this->subscribers, [fd](const auto &c)
+                          { return c->orginal_fd == fd; });
+    if (erased == 0)
+        throw ClientNotSubscriberException(fd, this->name);
 }
 
 void Topic::removePublisher(int fd)
@@ -64,29 +50,17 @@ void Topic::removePublisher(int fd)
 
 void Topic::publish(request msg)
 {
-    std::vector<ClientWriteAction *> clients_copy = {};
-    {
-        std::lock_guard<std::mutex> lock(this->subscribers_mutex);
-        clients_copy = std::vector<ClientWriteAction *>(this->subscribers.begin(), this->subscribers.end());
-    }
+    std::lock_guard<std::mutex> lock(this->subscribers_mutex);
     for (auto client : this->subscribers)
     {
         client->addMessage(msg);
-        client->addToEpollIfNotExists();
     }
 }
 
 bool Topic::checkIfPublisher(int fd)
 {
     std::lock_guard<std::mutex> lock(this->publishers_mutex);
-    for (auto client : this->publishers)
-    {
-        if (client == fd)
-        {
-            return true;
-        }
-    }
-    return false;
+    return this->publishers.count(fd) != 0;
 }
 
 bool Topic::isEmpty()

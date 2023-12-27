@@ -41,6 +41,7 @@ void EventLoop::Stop()
     close(this->epoll_fd);
     for (auto &t : this->threads)
     {
-        t.detach();
+        if(t.joinable())
+            t.detach();
     }
 }

@@ -63,8 +63,6 @@ bool ClientReadAction::checkEndOfRequest()
 void ClientReadAction::closeConnection()
 {
     close(this->fd);
-    std::cout << "Close connection client " << this->fd << std::endl;
-    epoll_ctl(this->efd, EPOLL_CTL_DEL, this->fd, &this->ev);
     ServerState::getInstance().removeClient(this->fd);
     delete this;
 }
