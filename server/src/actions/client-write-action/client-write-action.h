@@ -9,13 +9,14 @@
 #include "../../structs/request.h"
 #include "../../structs/response.h"
 #include "../../request-util/serialization/serialization.h"
+#include <fcntl.h>
 
 class ClientWriteAction : public EventAction
 {
 public:
    ClientWriteAction(int fd, int efd);
    ~ClientWriteAction();
-   void action();
+   void action() override;
    void addToEpollIfNotExists();
    void addMessage(request req);
    void addResponse(response res);

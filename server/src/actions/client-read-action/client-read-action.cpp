@@ -4,8 +4,6 @@ ClientReadAction::ClientReadAction(int fd, int efd) : EventAction(fd, efd)
 {
     this->ev.data.ptr = this;
     this->ev.events = EPOLLIN | EPOLLONESHOT;
-    int flags = fcntl(this->fd, F_GETFL, 0);
-    fcntl(this->fd, F_SETFL, flags | O_NONBLOCK);
 }
 
 ClientReadAction::~ClientReadAction()
@@ -19,13 +17,9 @@ void ClientReadAction::action()
         readRequest();
         if (checkEndOfRequest())
         {
-            std::string request = buffer.substr(0, buffer.find_first_of("\n\n") + 2);
-            buffer = buffer.substr(buffer.find_first_of("\n\n") + 2);
-            int err = epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
-            if (err == -1)
-            {
-                throw std::runtime_error("Epoll ctl mod error");
-            }
+            int endOfRequest = buffer.find("\n\n") + 2;
+            std::string request = buffer.substr(0, endOfRequest);
+            buffer = buffer.substr(endOfRequest + 1);
             RequestHandler::getInstance().handle(request, this->fd);
         }
     }
@@ -33,10 +27,10 @@ void ClientReadAction::action()
     {
         closeConnection();
     }
-    catch (std::exception &e)
+    int err = epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
+    if (err == -1)
     {
-        std::cout << "Error: " << e.what() << std::endl;
-        closeConnection();
+        throw std::runtime_error("Epoll ctl mod error");
     }
 }
 

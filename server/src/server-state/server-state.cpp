@@ -18,6 +18,8 @@ void ServerState::addClient(ClientWriteAction *client)
 
 void ServerState::removeClient(int orginal_fd)
 {
+    std::unique_lock<std::mutex> lock(this->topics_mutex);
+    lock.lock();
     for (auto topic : this->topics)
     {
         try {
@@ -31,12 +33,13 @@ void ServerState::removeClient(int orginal_fd)
             this->removeTopic(topic->getName());
         }
     }
+    lock.unlock();
     for (auto it = this->clients.begin(); it != this->clients.end(); ++it)
     {
         if ((*it)->orginal_fd == orginal_fd)
         {
             this->clients.erase(it);
-            delete *it;
+            delete (*it);
             break;
         }
     }

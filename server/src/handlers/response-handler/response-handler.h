@@ -15,5 +15,5 @@ public:
     void handle(request req) override;
     void handle(request req, std::exception &e);
     void handle(response res, int fd);
-    void setEfd(int efd);
+    void setEfd(int efd) override;
 };

@@ -15,7 +15,6 @@ public:
     static RequestHandler &getInstance();
     void handle(std::string req_str, int from);
     void handle(request req);
-    void handle(response res, int fd);
     void setEfd(int efd);
 
 private:

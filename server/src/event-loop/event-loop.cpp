@@ -10,7 +10,7 @@ EventLoop::~EventLoop()
     close(this->sock);
 }
 
-void EventLoop::Run()
+void EventLoop::run()
 {
     this->epoll_fd = epoll_create1(0);
     RequestHandler::getInstance().setEfd(this->epoll_fd);
@@ -36,7 +36,7 @@ void EventLoop::Run()
     }
 }
 
-void EventLoop::Stop()
+void EventLoop::stop()
 {
     close(this->epoll_fd);
     for (auto &t : this->threads)

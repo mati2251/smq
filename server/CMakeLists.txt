@@ -45,5 +45,5 @@ target_compile_options(smq PRIVATE -Wall -Wextra -Werror)
 
 
 
-add_test_and_executable(tests/json/deserialization/deserialization-test.cpp deserialization-tests)
-add_test_and_executable(tests/json/serialization/serialization-test.cpp serialization-tests)
+add_test_and_executable(tests/deserialization/deserialization-test.cpp deserialization-tests)
+add_test_and_executable(tests/serialization/serialization-test.cpp serialization-tests)

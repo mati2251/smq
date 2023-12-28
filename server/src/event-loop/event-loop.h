@@ -13,8 +13,8 @@ public:
     ~EventLoop();
     std::list<std::thread> threads = {};
 
-    void Run();
-    void Stop();
+    void run();
+    void stop();
 
 private:
     int sock;

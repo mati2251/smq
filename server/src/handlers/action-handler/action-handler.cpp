@@ -39,69 +39,69 @@ void ActionHandler::hanldeSubsribeAction(request act)
         std::cerr << "During handle subsribe action client not found" << std::endl;
         return;
     }
-    try
-    {
+    // try
+    // {
         t->addSubscriber(client);
-    }
-    catch (const ClientAlreadySubscriberException &e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
+    // }
+//     catch (const ClientAlreadySubscriberException &e)
+//     {
+//         std::cerr << e.what() << std::endl;
+//     }
 }
 
 void ActionHandler::handleUnsubscribeAction(request act)
 {
-    try
-    {
+    // try
+    // {
         Topic *t = ServerState::getInstance().getTopic(act.topic);
         t->removeSubscriber(act.from);
         if (t->isEmpty())
         {
             ServerState::getInstance().removeTopic(act.topic);
         }
-    }
-    catch (const TopicNotFoundException &e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
-    catch (const ClientNotSubscriberException &e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
+    // }
+    // catch (const TopicNotFoundException &e)
+    // {
+        // std::cerr << e.what() << std::endl;
+    // }
+    // catch (const ClientNotSubscriberException &e)
+    // {
+        // std::cerr << e.what() << std::endl;
+    // }
 }
 
 void ActionHandler::handlePublishAction(request act)
 {
     Topic *t = ServerState::getInstance().addNewTopicIfNotExists(act.topic);
-    try
-    {
+    // try
+    // {
         t->addPublisher(act.from);
-    }
-    catch (const ClientAlreadyPublisherException &e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
+    // }
+    // catch (const ClientAlreadyPublisherException &e)
+    // {
+        // std::cerr << e.what() << std::endl;
+    // }
 }
 
 void ActionHandler::handleUnpublishAction(request act)
 {
-    try
-    {
+    // try
+    // {
         Topic *t = ServerState::getInstance().getTopic(act.topic);
         t->removePublisher(act.from);
         if (t->isEmpty())
         {
             ServerState::getInstance().removeTopic(act.topic);
         }
-    }
-    catch (const TopicNotFoundException &e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
-    catch (const ClientNotPublisherException &e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
+    // }
+    // catch (const TopicNotFoundException &e)
+    // {
+        // std::cerr << e.what() << std::endl;
+    // }
+    // catch (const ClientNotPublisherException &e)
+    // {
+    //     std::cerr << e.what() << std::endl;
+    // }
 }
 
 ClientWriteAction *ActionHandler::getClientWriteAction(int client_id)

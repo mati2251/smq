@@ -8,7 +8,7 @@ static EventLoop *loop;
 
 static void sigint_handler(int)
 {
-    loop->Stop();
+    loop->stop();
 }
 
 int main(int argc, char **argv)
@@ -44,6 +44,6 @@ int main(int argc, char **argv)
     std::cout << "Listening on port " << argv[1] << std::endl;
     loop = new EventLoop(sock);
     signal(SIGINT, sigint_handler);
-    loop->Run();
+    loop->run();
     return 0;
 }
