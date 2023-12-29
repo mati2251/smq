@@ -4,13 +4,6 @@
 #include "event-loop/event-loop.h"
 #include <csignal>
 
-static EventLoop *loop;
-
-static void sigint_handler(int)
-{
-    loop->stop();
-}
-
 int main(int argc, char **argv)
 {
     if (argc != 2)
@@ -42,8 +35,7 @@ int main(int argc, char **argv)
         return 1;
     }
     std::cout << "Listening on port " << argv[1] << std::endl;
-    loop = new EventLoop(sock);
-    signal(SIGINT, sigint_handler);
+    EventLoop *loop = new EventLoop(sock);
     loop->run();
     return 0;
 }

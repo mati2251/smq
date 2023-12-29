@@ -24,5 +24,6 @@ request deserializeRequest(const std::string &req_str)
     result.topic = split_result.first;
     split_result = splitToTwice(split_result.second, "\n\n");
     result.body = split_result.first;
+    result.from = 0;
     return result;
 }

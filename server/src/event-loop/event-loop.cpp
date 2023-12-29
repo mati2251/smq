@@ -38,10 +38,10 @@ void EventLoop::run()
 
 void EventLoop::stop()
 {
-    close(this->epoll_fd);
     for (auto &t : this->threads)
     {
         if(t.joinable())
-            t.detach();
+            t.join();
     }
+    close(this->epoll_fd);
 }
