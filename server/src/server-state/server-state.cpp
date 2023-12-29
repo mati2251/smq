@@ -19,7 +19,6 @@ void ServerState::addClient(ClientWriteAction *client)
 void ServerState::removeClient(int orginal_fd)
 {
     std::unique_lock<std::mutex> lock(this->topics_mutex);
-    lock.lock();
     for (auto topic : this->topics)
     {
         try {
