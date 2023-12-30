@@ -13,7 +13,8 @@ std::string serializeResponse(const response &resp)
 {
     std::string result = "RESPONSE\n";
     result += std::to_string(resp.request_id) + "\n";
-    result += std::to_string(resp.code) + "\n\n";
+    result += std::to_string(resp.code) + "\n";
+    result += resp.message + "\n\n";
     return result;
 }
 

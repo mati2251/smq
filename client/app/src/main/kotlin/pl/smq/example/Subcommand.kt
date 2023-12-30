@@ -1,5 +1,5 @@
-package pl.smq.example;
+package pl.smq.example
 
 interface Subcommand {
-    fun execute();
+    suspend fun execute()
 }

@@ -19,18 +19,19 @@ void ClientReadAction::action()
         {
             int endOfRequest = buffer.find("\n\n") + 2;
             std::string request = buffer.substr(0, endOfRequest);
-            buffer = buffer.substr(endOfRequest + 1);
+            buffer = buffer.substr(endOfRequest);
             RequestHandler::getInstance().handle(request, this->fd);
         }
+        int err = epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
+        if (err == -1)
+        {
+            throw std::runtime_error("Epoll ctl mod error");
+        }
     }
-    catch (ConnectionCloseException &e)
+    catch (std::exception &e)
     {
+        std::cout << "Client " << this->fd << " disconnected" << std::endl;
         closeConnection();
-    }
-    int err = epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
-    if (err == -1)
-    {
-        throw std::runtime_error("Epoll ctl mod error");
     }
 }
 

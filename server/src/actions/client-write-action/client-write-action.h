@@ -17,12 +17,14 @@ public:
    ClientWriteAction(int fd, int efd);
    ~ClientWriteAction();
    void action() override;
+   void sendExchange(std::queue<std::string> *data);
    void addToEpollIfNotExists();
    void addMessage(request req);
    void addResponse(response res);
    int orginal_fd;
 private:
    std::mutex data_mtx;
-   std::deque<std::string> data_to_send = {};
+   std::queue<std::string> requests = {};
+   std::queue<std::string> responses = {};
    bool in_epoll = false;
 };

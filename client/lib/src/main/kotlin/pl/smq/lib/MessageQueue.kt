@@ -37,9 +37,9 @@ class MessageQueue(
             throw FullMessageBufferException()
         if (readerJob == null)
             startReading()
-        this.isSubscriber = true;
+        this.isSubscriber = true
         val requestId = action.registerAsSubscriber()
-        return this.responses.takeWhile { it.requestId == requestId }.single()
+        return this.responses.filter { it.requestId == requestId }.take(1).single()
     }
 
     suspend fun unregisterAsSubscriber(): Response {
@@ -49,9 +49,9 @@ class MessageQueue(
             throw FullMessageBufferException()
         if (readerJob != null && !isPublisher)
             stopReading()
-        this.isSubscriber = false;
+        this.isSubscriber = false
         val requestId = action.unregisterAsSubscriber()
-        return this.responses.takeWhile { it.requestId == requestId }.single()
+        return this.responses.filter { it.requestId == requestId }.take(1).single()
     }
 
     suspend fun registerAsPublisher(): Response {
@@ -61,9 +61,9 @@ class MessageQueue(
             throw FullMessageBufferException()
         if (readerJob == null)
             startReading()
-        this.isPublisher = true;
+        this.isPublisher = true
         val requestId = action.registerAsPublisher()
-        return this.responses.takeWhile { it.requestId == requestId }.single()
+        return this.responses.filter { it.requestId == requestId }.take(1).single()
     }
 
     suspend fun unregisterAsPublisher(): Response {
@@ -73,9 +73,9 @@ class MessageQueue(
             throw FullMessageBufferException()
         if (readerJob != null && !isSubscriber)
             stopReading()
-        this.isPublisher = false;
+        this.isPublisher = false
         val requestId = action.unregisterAsPublisher()
-        return this.responses.takeWhile { it.requestId == requestId }.single()
+        return this.responses.filter { it.requestId == requestId }.take(1).single()
     }
 
     suspend fun sendMessage(content: String): Response {
@@ -86,7 +86,7 @@ class MessageQueue(
         val requestId = SMQ.requestCounter++
         val request = Request(RequestType.MESSAGE, requestId, topic, content)
         writer.println(request.serialize())
-        return this.responses.takeWhile { it.requestId == requestId }.single()
+        return this.responses.filter { it.requestId == requestId }.take(1).single()
     }
 
     suspend fun readMessages(): String {
@@ -103,13 +103,12 @@ class MessageQueue(
 
     private fun startReading() {
         this.readerJob = CoroutineScope(Dispatchers.IO).launch {
-            var buf: String = ""
+            var buf = ""
             while (true) {
                 if (!buf.contains("\n\n"))
                     buf += reader.readLine() + "\n"
                 if (ExchangeUtils.isWholeExchange(buf)) {
                     val (exchange, rest) = ExchangeUtils.splitExchange(buf)
-                    println(exchange)
                     buf = rest
                     when (ExchangeUtils.checkType(exchange)) {
                         ExchangeType.RESPONSE -> {

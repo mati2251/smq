@@ -1,11 +1,9 @@
 package pl.smq.lib
 
 import pl.smq.lib.exceptions.InvalidExchangeException
-import pl.smq.lib.exceptions.InvalidExchangeTypeException
 import pl.smq.lib.models.ExchangeType
 import pl.smq.lib.models.Request
 import pl.smq.lib.models.Response
-import java.nio.CharBuffer
 
 object ExchangeUtils {
     fun isWholeExchange(exchange: String): Boolean {
@@ -23,11 +21,8 @@ object ExchangeUtils {
             throw InvalidExchangeException("No new line in exchange after type")
         }
         val type = exchange.substring(0, exchange.indexOf("\n"))
-        return try {
-            ExchangeType.valueOf(type)
-        } catch (e: Exception) {
-            throw InvalidExchangeTypeException(type)
-        }
+        if (type == ExchangeType.RESPONSE.toString()) return ExchangeType.RESPONSE
+        return ExchangeType.REQUEST
     }
 
     fun deserializeResponse(exchange: String): Response {

@@ -2,7 +2,7 @@
 
 void ResponseHandler::handle(request req)
 {
-    response res = {.code = response_code::SUCCESS, .request_id = req.id, .message = ""};
+    response res = {.code = response_code::SUCCESS, .request_id = req.id, .message = "OK"};
     this->handle(res, req.from);
 }
 

@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
 }
 
