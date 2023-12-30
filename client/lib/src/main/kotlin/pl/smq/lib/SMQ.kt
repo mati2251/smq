@@ -9,8 +9,11 @@ class SMQ(host: String, port: Int) {
     private val socket: Socket = Socket(host, port)
     private val writer: PrintWriter = PrintWriter(socket.getOutputStream(), true)
     private val reader: BufferedReader = BufferedReader(InputStreamReader(socket.getInputStream()))
-
     fun messageQueue(topic: String): MessageQueue {
         return MessageQueue(writer, reader, topic)
+    }
+
+    companion object {
+        var requestCounter = 1
     }
 }

@@ -1,93 +1,135 @@
 package pl.smq.lib
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
-import pl.smq.lib.models.Message
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
+import pl.smq.lib.exceptions.FullMessageBufferException
+import pl.smq.lib.exceptions.MessageQueueException
+import pl.smq.lib.models.ExchangeType
+import pl.smq.lib.models.Request
 import pl.smq.lib.models.RequestType
+import pl.smq.lib.models.Response
 import java.io.BufferedReader
 import java.io.PrintWriter
-import java.lang.RuntimeException
 
-class MessageQueueException(message: String) : RuntimeException(message)
 
-class MessageQueue(private val writer: PrintWriter, private val reader: BufferedReader, private val topic: String) {
+@DelicateCoroutinesApi
+class MessageQueue(
+    private val writer: PrintWriter,
+    private val reader: BufferedReader,
+    private val topic: String,
+    bufferSize: Int = 100,
+    onOverflowBuffer: BufferOverflow = BufferOverflow.SUSPEND,
+) {
     private val action: TopicUtil = TopicUtil(writer, topic)
     private var isSubscriber: Boolean = false
     private var isPublisher: Boolean = false
-    private var thread: Thread = Thread {
-        while (true) {
-            val c = CharArray(100)
-            val size = reader.read(c)
-            if (size == -1)
-                continue
-            val buffer = String(c, 0, size)
-            println(buffer)
-        }
-    }
+    private val messages: Channel<String> = Channel(bufferSize, onOverflowBuffer)
+    private val responses: MutableSharedFlow<Response> = MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private var readerJob: Job? = null
+    private val messageListener: MutableList<(String) -> Unit> = mutableListOf()
 
-    private val messageListener: MutableList<(Message) -> Unit> = mutableListOf()
-
-    fun registerAsSubscriber() {
+    suspend fun registerAsSubscriber(): Response {
         if (isSubscriber)
             throw MessageQueueException("You are already a subscriber")
-        thread.start()
-        action.registerAsSubscriber()
+        if (messages.isClosedForSend)
+            throw FullMessageBufferException()
+        if (readerJob == null)
+            startReading()
         this.isSubscriber = true;
+        val requestId = action.registerAsSubscriber()
+        return this.responses.takeWhile { it.requestId == requestId }.single()
     }
 
-    fun unregisterAsSubscriber() {
+    suspend fun unregisterAsSubscriber(): Response {
         if (!isSubscriber)
             throw MessageQueueException("You are not a subscriber")
-        action.unregisterAsSubscriber()
+        if (messages.isClosedForSend)
+            throw FullMessageBufferException()
+        if (readerJob != null && !isPublisher)
+            stopReading()
         this.isSubscriber = false;
-        thread.interrupt();
-        if (!isPublisher)
-            thread.interrupt();
+        val requestId = action.unregisterAsSubscriber()
+        return this.responses.takeWhile { it.requestId == requestId }.single()
     }
 
-    fun registerAsPublisher() {
+    suspend fun registerAsPublisher(): Response {
         if (isPublisher)
             throw MessageQueueException("You are already a publisher")
-        thread.start()
-        action.registerAsPublisher()
+        if (messages.isClosedForSend)
+            throw FullMessageBufferException()
+        if (readerJob == null)
+            startReading()
         this.isPublisher = true;
+        val requestId = action.registerAsPublisher()
+        return this.responses.takeWhile { it.requestId == requestId }.single()
     }
 
-    fun unregisterAsPublisher() {
+    suspend fun unregisterAsPublisher(): Response {
         if (!isPublisher)
             throw MessageQueueException("You are not a publisher")
-        action.unregisterAsPublisher()
+        if (messages.isClosedForSend)
+            throw FullMessageBufferException()
+        if (readerJob != null && !isSubscriber)
+            stopReading()
         this.isPublisher = false;
-        if (!isSubscriber)
-            thread.interrupt();
+        val requestId = action.unregisterAsPublisher()
+        return this.responses.takeWhile { it.requestId == requestId }.single()
     }
 
-    fun sendMessage(content: String) {
+    suspend fun sendMessage(content: String): Response {
         if (!isPublisher)
             throw MessageQueueException("Cannot send message, you are not a publisher")
-        val message = Message(topic, content)
-        val json = Json.encodeToJsonElement(message)
-        writer.println("${RequestType.MESSAGE}\n$json")
+        if (messages.isClosedForSend)
+            throw FullMessageBufferException()
+        val requestId = SMQ.requestCounter++
+        val request = Request(RequestType.MESSAGE, requestId, topic, content)
+        writer.println(request.serialize())
+        return this.responses.takeWhile { it.requestId == requestId }.single()
     }
 
-    fun addMessageListener(listener: (Message) -> Unit) {
+    suspend fun readMessages(): String {
+        return this.messages.receive()
+    }
+
+    fun addMessageListener(listener: (String) -> Unit) {
         messageListener.add(listener)
     }
 
-    fun removeMessageListener(listener: (Message) -> Unit) {
+    fun removeMessageListener(listener: (String) -> Unit) {
         messageListener.remove(listener)
     }
 
-    suspend fun readMessage(): String {
-        if (!isSubscriber)
-            throw MessageQueueException("Cannot read message, you are not a subscriber")
-        thread.interrupt()
-        return withContext(Dispatchers.IO) {
-            val buffer = reader.readLine()
-            thread.start()
-            return@withContext buffer
+    private fun startReading() {
+        this.readerJob = CoroutineScope(Dispatchers.IO).launch {
+            var buf: String = ""
+            while (true) {
+                if (!buf.contains("\n\n"))
+                    buf += reader.readLine() + "\n"
+                if (ExchangeUtils.isWholeExchange(buf)) {
+                    val (exchange, rest) = ExchangeUtils.splitExchange(buf)
+                    println(exchange)
+                    buf = rest
+                    when (ExchangeUtils.checkType(exchange)) {
+                        ExchangeType.RESPONSE -> {
+                            val response = ExchangeUtils.deserializeResponse(exchange)
+                            this@MessageQueue.responses.emit(response)
+                        }
+
+                        ExchangeType.REQUEST -> {
+                            val request = ExchangeUtils.deserializeRequest(exchange)
+                            if (request.type == RequestType.MESSAGE && isSubscriber)
+                                this@MessageQueue.messages.send(request.body)
+                            messageListener.forEach { it(request.body) }
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private fun stopReading() {
+        this.readerJob?.cancel()
     }
 }
