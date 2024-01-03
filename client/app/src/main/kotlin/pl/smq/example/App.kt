@@ -1,6 +1,6 @@
 package pl.smq.example
 
-fun main(args: Array<String>) {
+suspend fun main(args: Array<String>) {
     if (args.isEmpty()) {
         println("Usage: <pub|sub>")
         return

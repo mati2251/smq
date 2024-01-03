@@ -8,6 +8,7 @@ class EventAction
 public:
     const int fd, efd;
     EventAction(int fd, int efd) : fd(fd), efd(efd) {}
+    virtual ~EventAction() {}
     virtual void action() = 0;
     epoll_event &getEpollEvent(){
         return this->ev;

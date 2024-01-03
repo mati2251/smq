@@ -10,7 +10,7 @@
 #include "../client-read-action/client-read-action.h"
 #include "../client-write-action/client-write-action.h"
 #include "../../server-state/server-state.h"
-
+#include "accept-exception.hpp"
 
 class AcceptAction : public EventAction
 {
@@ -18,4 +18,5 @@ public:
     AcceptAction(int fd, int efd);
     void action();
 private:
+    void returnToEpoll();
 };
