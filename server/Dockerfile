@@ -1,8 +1,10 @@
 FROM archlinux
 COPY ./ /smq
 WORKDIR /smq
-RUN pacman -Syu  --noconfirm && pacman -S --noconfirm cmake make gcc git
+RUN pacman -Syu  --noconfirm && pacman -S --noconfirm cmake make clang git
 RUN <<EOF
+    export CC=/usr/bin/clang \
+    && export CXX=/usr/bin/clang++ \
     mkdir build \
     && cd build \
     && cmake .. \
