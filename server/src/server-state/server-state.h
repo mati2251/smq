@@ -17,6 +17,7 @@ public:
     Topic *getTopic(std::string name);
     Topic *addNewTopicIfNotExists(std::string topic_name);
     void removeTopic(std::string name);
+
 private:
     std::mutex topics_mutex;
     friend class MessageHandler;
@@ -30,4 +31,5 @@ private:
     ServerState(const ServerState &) = delete;
     ServerState &operator=(const ServerState &) = delete;
     Topic *getTopicWithoutLock(std::string name);
+    void removeTopicWithoutLock(std::string name);
 };

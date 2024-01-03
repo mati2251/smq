@@ -59,5 +59,4 @@ void ClientReadAction::closeConnection()
 {
     close(this->fd);
     ServerState::getInstance().removeClient(this->fd);
-    delete this;
 }

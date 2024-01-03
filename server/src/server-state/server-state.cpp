@@ -21,15 +21,23 @@ void ServerState::removeClient(int orginal_fd)
     std::unique_lock<std::mutex> lock(this->topics_mutex);
     for (auto topic : this->topics)
     {
-        try {
+        try
+        {
             topic->removePublisher(orginal_fd);
-        } catch (std::exception &e) {}
-        try {
+        }
+        catch (std::exception &e)
+        {
+        }
+        try
+        {
             topic->removeSubscriber(orginal_fd);
-        } catch (std::exception &e) {}
+        }
+        catch (std::exception &e)
+        {
+        }
         if (topic->isEmpty())
         {
-            this->removeTopic(topic->getName());
+            this->removeTopicWithoutLock(topic->getName());
         }
     }
     lock.unlock();
@@ -78,16 +86,17 @@ Topic *ServerState::addNewTopicIfNotExists(std::string topic_name)
     }
 }
 
+void ServerState::removeTopicWithoutLock(std::string name)
+{
+    int erase_num = erase_if(this->topics, [name](const auto &t)
+                             { return t->getName() == name; });
+    if (erase_num != 0)
+        std::cout << "Topic " << name << " removed" << std::endl;
+    
+}
+
 void ServerState::removeTopic(std::string name)
 {
     std::lock_guard<std::mutex> lock(this->topics_mutex);
-    for (auto it = this->topics.begin(); it != this->topics.end(); ++it)
-    {
-        if ((*it)->getName() == name)
-        {
-            this->topics.erase(it);
-            std::cout << "Topic " << name << " removed" << std::endl;
-            break;
-        }
-    }
+    this->removeTopicWithoutLock(name);
 }
