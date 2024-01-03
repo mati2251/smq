@@ -1,7 +1,7 @@
 
 #include <catch2/catch_test_macros.hpp>
-#include "../../../src/structs/request.h"
-#include "../../../src/request-util/serialization/serialization.h"
+#include "../../src/structs/request.h"
+#include "../../src/request-util/serialization/serialization.h"
 TEST_CASE("request serialization", "[serialization]")
 {
     request req = {request_type::MESSAGE, 1, "topic", "content"};

@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
-#include "../../../src/structs/request.h"
-#include "../../../src/request-util/deserialization/deserialization.h"
+#include "../../src/structs/request.h"
+#include "../../src/request-util/deserialization/deserialization.h"
 
 TEST_CASE("request deserialization", "[deserialization]") {
     std::string req_str = "MESSAGE\n1\ntopic\ncontent\n\n";
