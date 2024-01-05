@@ -12,7 +12,7 @@ enum request_type
 
 struct request
 {
-    request_type type;
+    request_type type = request_type::INVALID;
     int id;
     std::string topic;
     std::string body;
