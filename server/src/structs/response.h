@@ -16,5 +16,6 @@ enum response_code{
 struct response 
 {
     response_code code;
+    int request_id;
     std::string message;
 };

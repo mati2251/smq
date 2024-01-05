@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.20)
 project(smq)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -12,8 +12,8 @@ set(files
     src/handlers/action-handler/action-handler.cpp
     src/handlers/message-handler/message-handler.cpp
     src/request-util/request-util.cpp
-    src/json/deserialization/deserialization.cpp
-    src/json/serialization/serialization.cpp
+    src/request-util/deserialization/deserialization.cpp
+    src/request-util/serialization/serialization.cpp
     src/server-state/server-state.cpp
     src/topic/topic.cpp
     src/handlers/response-handler/response-handler.cpp
@@ -45,5 +45,5 @@ target_compile_options(smq PRIVATE -Wall -Wextra -Werror)
 
 
 
-add_test_and_executable(tests/json/deserialization/deserialization-test.cpp deserialization-tests)
-add_test_and_executable(tests/json/serialization/serialization-test.cpp serialization-tests)
+add_test_and_executable(tests/deserialization/deserialization-test.cpp deserialization-tests)
+add_test_and_executable(tests/serialization/serialization-test.cpp serialization-tests)

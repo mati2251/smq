@@ -3,7 +3,6 @@
 #include "../../structs/request.h"
 #include "../handler.h"
 #include <iostream>
-#include "../../json/deserialization/deserialization.h"
 #include "action-exception.hpp"
 #include "../../topic/topic.h"
 #include "../../server-state/server-state.h"
@@ -14,9 +13,9 @@ public:
     void handle(request req);
     void setEfd(int efd);
 private:
-    void hanldeSubsribeAction(action_topic act);
-    void handleUnsubscribeAction(action_topic act);
-    void handlePublishAction(action_topic act);
-    void handleUnpublishAction(action_topic act);
+    void hanldeSubsribeAction(request act);
+    void handleUnsubscribeAction(request act);
+    void handlePublishAction(request act);
+    void handleUnpublishAction(request act);
     ClientWriteAction *getClientWriteAction(int client_id);
 };

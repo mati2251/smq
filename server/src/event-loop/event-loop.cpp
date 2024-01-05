@@ -10,7 +10,7 @@ EventLoop::~EventLoop()
     close(this->sock);
 }
 
-void EventLoop::Run()
+void EventLoop::run()
 {
     this->epoll_fd = epoll_create1(0);
     RequestHandler::getInstance().setEfd(this->epoll_fd);
@@ -32,11 +32,16 @@ void EventLoop::Run()
         epoll_wait(this->epoll_fd, &events, 1, -1);
         EventAction *event_action = static_cast<EventAction *>(events.data.ptr);
         std::thread t(&EventAction::action, event_action);
-        t.join();
+        this->threads.push_back(std::move(t));
     }
 }
 
-void EventLoop::Stop()
+void EventLoop::stop()
 {
+    for (auto &t : this->threads)
+    {
+        if(t.joinable())
+            t.join();
+    }
     close(this->epoll_fd);
 }

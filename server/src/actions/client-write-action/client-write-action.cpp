@@ -14,56 +14,52 @@ ClientWriteAction::~ClientWriteAction()
 
 void ClientWriteAction::action()
 {
-    if (!this->responses.empty())
+    std::lock_guard<std::mutex> lock(this->data_mtx);
+    if (this->requests.empty() && this->responses.empty())
     {
-        send(this->responses, this->responses_mtx);
-        std::cout << "Sending response to client " << this->orginal_fd << std::endl;
-        return;
-    }
-    if (!this->messages.empty())
-    {
-        send(this->messages, this->messages_mtx);
-        std::cout << "Sending message to client " << this->orginal_fd << std::endl;
-    }
-}
-
-template <typename T>
-void ClientWriteAction::send(std::queue<T> &q, std::mutex &mtx)
-{
-    std::string msg = serialize(q.front());
-    int size = write(fd, const_cast<char *>(msg.c_str()), msg.size());
-    if (size == -1)
-    {
-        std::cerr << "write: ClientWriteAction" << std::endl;
-        std::cerr << strerror(errno) << std::endl;
-        return;
-    }
-    {
-        std::lock_guard<std::mutex> lock(mtx);
-        q.pop();
-        if (this->messages.empty() && this->responses.empty())
-        {
-            this->in_epoll = false;
-            int err = epoll_ctl(this->efd, EPOLL_CTL_DEL, this->fd, &this->ev);
-            if (err == -1)
-            {
-                std::cerr << "epoll_ctl: ClientWriteAction" << std::endl;
-            }
-            return;
-        }
-        int err = epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
+        this->in_epoll = false;
+        int err = epoll_ctl(this->efd, EPOLL_CTL_DEL, this->fd, nullptr);
         if (err == -1)
         {
             std::cerr << "epoll_ctl: ClientWriteAction" << std::endl;
             std::cerr << strerror(errno) << std::endl;
         }
+        return;
+    }
+    std::string data = "";
+    if (this->responses.empty())
+        this->sendExchange(&this->requests);
+    else
+        this->sendExchange(&this->responses);
+    int err = epoll_ctl(this->efd, EPOLL_CTL_MOD, this->fd, &this->ev);
+    if (err == -1)
+    {
+        std::cerr << "epoll_ctl: ClientWriteAction" << std::endl;
+        std::cerr << strerror(errno) << std::endl;
+    }
+}
+
+void ClientWriteAction::sendExchange(std::queue<std::string> *data)
+{
+    std::string exchange = data->front();
+    size_t size = write(fd, const_cast<char *>(exchange.c_str()), exchange.size());
+    if (size == (size_t)-1)
+    {
+        std::cerr << "write: ClientWriteAction" << std::endl;
+        std::cerr << strerror(errno) << std::endl;
+    }
+    if (size == exchange.size())
+    {
+        data->pop();
+    }
+    else
+    {
+        data->front() = exchange.substr(size);
     }
 }
 
 void ClientWriteAction::addToEpollIfNotExists()
 {
-    std::lock_guard<std::mutex> lock(this->messages_mtx);
-    std::lock_guard<std::mutex> lock2(this->responses_mtx);
     if (this->in_epoll)
         return;
     this->in_epoll = true;
@@ -75,14 +71,18 @@ void ClientWriteAction::addToEpollIfNotExists()
     }
 }
 
-void ClientWriteAction::addMessage(message msg)
+void ClientWriteAction::addMessage(request req)
 {
-    std::lock_guard<std::mutex> lock(this->messages_mtx);
-    this->messages.push(msg);
+    std::string s = serialize(req);
+    std::lock_guard<std::mutex> lock(this->data_mtx);
+    this->requests.push(s);
+    this->addToEpollIfNotExists();
 }
 
 void ClientWriteAction::addResponse(response res)
 {
-    std::lock_guard<std::mutex> lock(this->responses_mtx);
-    this->responses.push(res);
+    std::string s = serialize(res);
+    std::lock_guard<std::mutex> lock(this->data_mtx);
+    this->responses.push(s);
+    this->addToEpollIfNotExists();
 }

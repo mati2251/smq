@@ -1,10 +1,11 @@
 #pragma once
 
 #include <string>
-#include "../../structs/message.h"
 #include "../../structs/response.h"
+#include "../../structs/request.h"
+#include "../request-util.h"
 
-std::string serializeMessage(const message &msg);
+std::string serializiRequest(const request req);
 
 std::string serializeResponse(const response &resp);
 

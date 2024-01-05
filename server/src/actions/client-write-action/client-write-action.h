@@ -5,25 +5,26 @@
 #include <csignal>
 #include <errno.h>
 #include <string.h>
-#include "../../structs/message.h"
-#include "../../json/serialization/serialization.h"
 #include <mutex>
+#include "../../structs/request.h"
+#include "../../structs/response.h"
+#include "../../request-util/serialization/serialization.h"
+#include <fcntl.h>
 
 class ClientWriteAction : public EventAction
 {
 public:
    ClientWriteAction(int fd, int efd);
    ~ClientWriteAction();
-   void action();
+   void action() override;
+   void sendExchange(std::queue<std::string> *data);
    void addToEpollIfNotExists();
-   void addMessage(message msg);
+   void addMessage(request req);
    void addResponse(response res);
-   template <typename T> void send(std::queue<T> &q, std::mutex &mtx);
    int orginal_fd;
 private:
-   std::mutex messages_mtx;
-   std::mutex responses_mtx;
-   std::queue<message> messages = {};
-   std::queue<response> responses = {};
+   std::mutex data_mtx;
+   std::queue<std::string> requests = {};
+   std::queue<std::string> responses = {};
    bool in_epoll = false;
 };

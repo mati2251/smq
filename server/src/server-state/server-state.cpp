@@ -18,32 +18,42 @@ void ServerState::addClient(ClientWriteAction *client)
 
 void ServerState::removeClient(int orginal_fd)
 {
+    std::unique_lock<std::mutex> lock(this->topics_mutex);
     for (auto topic : this->topics)
     {
-        try {
+        try
+        {
             topic->removePublisher(orginal_fd);
-        } catch (std::exception &e) {}
-        try {
+        }
+        catch (std::exception &e)
+        {
+        }
+        try
+        {
             topic->removeSubscriber(orginal_fd);
-        } catch (std::exception &e) {}
+        }
+        catch (std::exception &e)
+        {
+        }
         if (topic->isEmpty())
         {
-            this->removeTopic(topic->getName());
+            this->removeTopicWithoutLock(topic->getName());
         }
     }
+    lock.unlock();
     for (auto it = this->clients.begin(); it != this->clients.end(); ++it)
     {
         if ((*it)->orginal_fd == orginal_fd)
         {
             this->clients.erase(it);
+            delete (*it);
             break;
         }
     }
 }
 
-Topic *ServerState::getTopic(std::string name)
+Topic *ServerState::getTopicWithoutLock(std::string name)
 {
-    std::lock_guard<std::mutex> lock(this->topics_mutex);
     for (auto topic : this->topics)
     {
         if (topic->getName() == name)
@@ -54,15 +64,21 @@ Topic *ServerState::getTopic(std::string name)
     throw TopicNotFoundException(name);
 }
 
+Topic *ServerState::getTopic(std::string name)
+{
+    std::lock_guard<std::mutex> lock(this->topics_mutex);
+    return this->getTopicWithoutLock(name);
+}
+
 Topic *ServerState::addNewTopicIfNotExists(std::string topic_name)
 {
+    std::lock_guard<std::mutex> lock(this->topics_mutex);
     try
     {
-        return this->getTopic(topic_name);
+        return this->getTopicWithoutLock(topic_name);
     }
     catch (const TopicNotFoundException &e)
     {
-        std::lock_guard<std::mutex> lock(this->topics_mutex);
         auto topic = new Topic(topic_name);
         ServerState::getInstance().topics.push_back(topic);
         std::cout << "New topic " << topic_name << " created" << std::endl;
@@ -70,16 +86,17 @@ Topic *ServerState::addNewTopicIfNotExists(std::string topic_name)
     }
 }
 
+void ServerState::removeTopicWithoutLock(std::string name)
+{
+    int erase_num = erase_if(this->topics, [name](const auto &t)
+                             { return t->getName() == name; });
+    if (erase_num != 0)
+        std::cout << "Topic " << name << " removed" << std::endl;
+    
+}
+
 void ServerState::removeTopic(std::string name)
 {
     std::lock_guard<std::mutex> lock(this->topics_mutex);
-    for (auto it = this->topics.begin(); it != this->topics.end(); ++it)
-    {
-        if ((*it)->getName() == name)
-        {
-            this->topics.erase(it);
-            std::cout << "Topic " << name << " removed" << std::endl;
-            break;
-        }
-    }
+    this->removeTopicWithoutLock(name);
 }
