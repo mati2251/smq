@@ -7,6 +7,7 @@ import pl.smq.lib.SMQ
 class Publisher() : Subcommand {
     override suspend fun execute() {
         val smq = SMQ("localhost", 3000)
+        smq.connect()
         val queue = smq.messageQueue("test")
         val res = queue.registerAsPublisher()
         if (res.code == 0) {

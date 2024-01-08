@@ -6,20 +6,74 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.Socket
+import pl.smq.lib.models.Response
+import pl.smq.lib.models.ExchangeType
+import pl.smq.lib.models.RequestType
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.*
 
 @DelicateCoroutinesApi
-class SMQ(host: String, port: Int) {
-    private val socket: Socket = Socket(host, port)
-    private val writer: PrintWriter = PrintWriter(socket.getOutputStream(), true)
-    private val reader: BufferedReader = BufferedReader(InputStreamReader(socket.getInputStream()))
+class SMQ(private val host: String, private val port: Int) {
+    private lateinit var socket: Socket
+    private lateinit var writer: PrintWriter
+    private lateinit var reader: BufferedReader
+    private var readerJob: Job? = null
+    private val queues: MutableMap<String, MessageQueue> = mutableMapOf()
+
+    fun connect(){
+        this.socket = Socket(host, port)
+        this.writer = PrintWriter(socket.getOutputStream(), true)
+        this.reader = BufferedReader(InputStreamReader(socket.getInputStream()))
+        startReading()
+    }
+
+    fun disconnect(){
+        this.socket.close()
+        this.writer.close()
+        this.reader.close()
+        this.readerJob?.cancel()
+    }
+
     fun messageQueue(
         topic: String, bufferSize: Int = 100,
         onOverflowBuffer: BufferOverflow = BufferOverflow.SUSPEND,
     ): MessageQueue {
-        return MessageQueue(writer, reader, topic, bufferSize, onOverflowBuffer)
+        if (queues.containsKey(topic)) {
+            return queues[topic]!!
+        }
+        val queue = MessageQueue(writer, topic, bufferSize, onOverflowBuffer)
+        queues[topic] = queue
+        return queue
     }
 
     companion object {
         var requestCounter = 1
+        val responses: MutableSharedFlow<Response> = MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    }
+
+    private fun startReading() {
+        this.readerJob = CoroutineScope(Dispatchers.IO).launch {
+            var buf = ""
+            while (true) {
+                if (!buf.contains("\n\n")) buf += reader.readLine() + "\n"
+                if (ExchangeUtils.isWholeExchange(buf)) {
+                    val (exchange, rest) = ExchangeUtils.splitExchange(buf)
+                    buf = rest
+                    when (ExchangeUtils.checkType(exchange)) {
+                        ExchangeType.RESPONSE -> {
+                            val response = ExchangeUtils.deserializeResponse(exchange)
+                            responses.emit(response)
+                        }
+
+                        ExchangeType.REQUEST -> {
+                            val request = ExchangeUtils.deserializeRequest(exchange)
+                            if (request.type == RequestType.MESSAGE) {
+                                queues[request.topic]?.addMessage(request.body)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
