@@ -10,11 +10,7 @@
 int main(int argc, char **argv)
 {
     char **args;
-    if (argc != 2 && argc != 4)
-    {
-        std::cout << "Usage: " << argv[0] << " [-f] <port> <package-lifetime-in-seconds> <buffer-size>" << std::endl;
-        return 1;
-    } else if (!strcmp(argv[1], "-f"))
+    if (!strcmp(argv[1], "-f"))
     {
         std::ifstream inputFile("../configuration_file.txt");
         if (!inputFile.is_open()) {
@@ -48,8 +44,12 @@ int main(int argc, char **argv)
             std::cout << args[i] << std::endl;
         }
         inputFile.close();
-    } else {
+    } else if (argc == 4)
+    {
         args = argv;
+    } else {
+        std::cout << "Usage: " << argv[0] << " [-f] <port> <package-lifetime-in-seconds> <buffer-size>" << std::endl;
+        return 1;
     }
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
