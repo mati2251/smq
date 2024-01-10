@@ -73,7 +73,7 @@ class MessageQueue(
 
     suspend fun addMessage(message: String){
         if (!isSubscriber)
-                throw MessageQueueException("You received inlegal message, you are not a subscriber")
+            return
         if (messages.isClosedForSend) throw FullMessageBufferException()
         messages.send(message)
         this.notifyMessageListeners(message)
