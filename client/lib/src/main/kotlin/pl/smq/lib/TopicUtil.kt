@@ -1,13 +1,15 @@
 package pl.smq.lib
 
+import kotlinx.coroutines.DelicateCoroutinesApi
 import pl.smq.lib.models.ActionTopicType
 import pl.smq.lib.models.Request
 import pl.smq.lib.models.RequestType
 import java.io.PrintWriter
 
 class TopicUtil(private val writer: PrintWriter, private val topic: String) {
+    @OptIn(DelicateCoroutinesApi::class)
     private fun action(actionTopic: ActionTopicType): Int {
-        val requestId = SMQ.requestCounter++;
+        val requestId = SMQ.requestCounter++
         val request = Request(RequestType.ACTION, requestId, topic, actionTopic.toString())
         writer.println(request.serialize())
         return requestId
