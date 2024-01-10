@@ -3,12 +3,13 @@
 #include <netinet/in.h>
 #include "event-loop/event-loop.h"
 #include <csignal>
+#include "configure/configure.h"
 
 int main(int argc, char **argv)
 {
-    if (argc != 2)
+    if (argc != 3)
     {
-        std::cout << "Usage: " << argv[0] << " <port>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <port> <package-lifetime-in-seconds>" << std::endl;
         return 1;
     }
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -35,6 +36,7 @@ int main(int argc, char **argv)
         return 1;
     }
     std::cout << "Listening on port " << argv[1] << std::endl;
+    set_conf(argv);
     EventLoop *loop = new EventLoop(sock);
     loop->run();
     return 0;

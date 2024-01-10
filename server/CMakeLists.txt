@@ -18,6 +18,7 @@ set(files
     src/server-state/server-state.cpp
     src/topic/topic.cpp
     src/handlers/response-handler/response-handler.cpp
+    src/configure/configure.cpp
 )
 
 include_directories(server)
