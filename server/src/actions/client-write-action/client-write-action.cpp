@@ -39,22 +39,27 @@ void ClientWriteAction::action()
     }
 }
 
-void ClientWriteAction::sendExchange(std::queue<std::string> *data)
+void ClientWriteAction::sendExchange(std::queue<package> *data)
 {
-    std::string exchange = data->front();
-    size_t size = write(fd, const_cast<char *>(exchange.c_str()), exchange.size());
-    if (size == (size_t)-1)
-    {
-        std::cerr << "write: ClientWriteAction" << std::endl;
-        std::cerr << strerror(errno) << std::endl;
-    }
-    if (size == exchange.size())
-    {
+    package exchange = data->front();
+    if( (((double)(clock() - exchange.time))/CLOCKS_PER_SEC) < get_package_lifetime_conf()){
+        size_t size = write(fd, const_cast<char *>(exchange.s.c_str()), exchange.s.size());
+        if (size == (size_t)-1)
+        {
+            std::cerr << "write: ClientWriteAction" << std::endl;
+            std::cerr << strerror(errno) << std::endl;
+        }
+        if (size == exchange.s.size())
+        {
+            data->pop();
+        }
+        else
+        {
+            data->front().s = exchange.s.substr(size);
+        }
+    } else {
+        std::cout << "Package lifetime was violated. Package ignored" << std::endl;
         data->pop();
-    }
-    else
-    {
-        data->front() = exchange.substr(size);
     }
 }
 
@@ -73,16 +78,20 @@ void ClientWriteAction::addToEpollIfNotExists()
 
 void ClientWriteAction::addMessage(request req)
 {
-    std::string s = serialize(req);
+    package pack;
+    pack.s = serialize(req);
+    pack.time = clock();
     std::lock_guard<std::mutex> lock(this->data_mtx);
-    this->requests.push(s);
+    this->requests.push(pack);
     this->addToEpollIfNotExists();
 }
 
 void ClientWriteAction::addResponse(response res)
 {
-    std::string s = serialize(res);
+    package pack;
+    pack.s = serialize(res);
+    pack.time = clock();
     std::lock_guard<std::mutex> lock(this->data_mtx);
-    this->responses.push(s);
+    this->responses.push(pack);
     this->addToEpollIfNotExists();
 }
