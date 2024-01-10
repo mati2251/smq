@@ -32,9 +32,11 @@ fun printHelp(){
     println("Usage: <pub|sub> test-case host port topic")
     println("""
             Subscriber test cases:
-            1. Normal subscriber 
+            1. Normal subscriber read in loop
+            2. One message subscriber
             Publisher test cases:
-            1. Normal publisher
+            1. Normal publisher send in loop
+            2. One message publisher
         """.trimIndent())
     return
 }
