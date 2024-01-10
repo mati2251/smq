@@ -1,4 +1,5 @@
 #pragma once
+
 #define BUFFER_SIZE 1024
 
 #include <csignal>
@@ -9,6 +10,7 @@
 #include "invalid-request-exception.hpp"
 #include "connection-close-exception.hpp"
 #include <fcntl.h>
+#include "../../configure/configure.h"
 
 
 class ClientReadAction : public EventAction

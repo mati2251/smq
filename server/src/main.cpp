@@ -7,9 +7,9 @@
 
 int main(int argc, char **argv)
 {
-    if (argc != 3)
+    if (argc != 4)
     {
-        std::cout << "Usage: " << argv[0] << " <port> <package-lifetime-in-seconds>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <port> <package-lifetime-in-seconds> <buffer-size>" << std::endl;
         return 1;
     }
     int sock = socket(AF_INET, SOCK_STREAM, 0);

@@ -47,7 +47,10 @@ void ClientReadAction::readRequest()
     {
         return;
     }
-    buffer += std::string(buf, n);
+    if((buffer.size() + n) <= get_buffer_size_conf())
+        buffer += std::string(buf, n);
+    else
+        std::cout << "Buffer is full" << std::endl;
 }
 
 bool ClientReadAction::checkEndOfRequest()
