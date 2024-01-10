@@ -7,6 +7,7 @@ object SubscriberFactory {
         return when(testCase){
             1 -> Subscriber()
             2 -> SubscriberOnce()
+            3 -> SubscriberBlocked()
             else -> Subscriber()
         }
     }

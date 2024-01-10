@@ -20,7 +20,7 @@ class Subscriber() : Action {
             return
         }
         while (true) {
-            val msg = queue.readMessages()
+            val msg = queue.readMessage()
             println("Received message: $msg")
         }
     }

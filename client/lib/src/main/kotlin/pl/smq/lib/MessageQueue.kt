@@ -22,7 +22,6 @@ class MessageQueue(
     private var isSubscriber: Boolean = false
     private var isPublisher: Boolean = false
     private val messages: Channel<String> = Channel(bufferSize, onOverflowBuffer)
-    private var readerJob: Job? = null
     private val messageListener: MutableList<(String) -> Unit> = mutableListOf()
 
     suspend fun registerAsSubscriber(): Response {
@@ -67,7 +66,7 @@ class MessageQueue(
         return SMQ.responses.filter { it.requestId == requestId }.take(1).single()
     }
 
-    suspend fun readMessages(): String {
+    suspend fun readMessage(): String {
         return this.messages.receive()
     }
 

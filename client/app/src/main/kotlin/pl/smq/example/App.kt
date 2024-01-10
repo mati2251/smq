@@ -6,7 +6,7 @@ suspend fun main(args: Array<String>) {
         return
     }
     val testCase: Int
-    val host: String = args[2];
+    val host: String = args[2]
     val topic: String = args[4]
     val port: Int
     try{
@@ -34,9 +34,12 @@ fun printHelp(){
             Subscriber test cases:
             1. Normal subscriber read in loop
             2. One message subscriber
+            3. Timeout test (block after first message for 20 seconds)
             Publisher test cases:
             1. Normal publisher send in loop
             2. One message publisher
+            3. Publisher and subscriber (publish to topic and read from topic + "2")
+            4. Send double new line in messages
         """.trimIndent())
     return
 }
