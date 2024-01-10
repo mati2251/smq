@@ -12,7 +12,6 @@ class SubscriberOnce() : Action {
         smq.connect()
         val queue = smq.messageQueue(topic, 10, BufferOverflow.DROP_OLDEST)
         val res = queue.registerAsSubscriber()
-        println(res)
         if (res.code == 0) {
             println("Registered as subscriber (topic: $topic)")
         } else {
