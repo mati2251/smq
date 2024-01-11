@@ -4,8 +4,6 @@
 #include "../topic/topic.h"
 #include "../actions/client-write-action/client-write-action.h"
 #include <mutex>
-#include "../topic/topic-exceptions.hpp"
-#include <exception>
 
 class ServerState
 {

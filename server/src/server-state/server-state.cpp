@@ -45,8 +45,8 @@ void ServerState::removeClient(int orginal_fd)
     {
         if ((*it)->orginal_fd == orginal_fd)
         {
-            this->clients.erase(it);
             delete (*it);
+            this->clients.erase(it);
             break;
         }
     }
