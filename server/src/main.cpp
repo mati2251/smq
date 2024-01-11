@@ -7,11 +7,28 @@
 
 int main(int argc, char **argv)
 {
-    if (argc != 3)
+    if (argc < 2 || argc > 6)
     {
-        std::cout << "Usage: " << argv[0] << " <port> <package-lifetime-in-seconds>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <port> [-pl] [-bs]" << std::endl;
+        std::cout << "-pl <float-number>    Package lifetime in seconds. Default no-limit" << std::endl;
+        std::cout << "-bs <integer-number>  Buffer size. Default no-limit" << std::endl;
         return 1;
     }
+    if (argv[4]){
+        if (!strcmp(argv[4], "-pl")) {
+            set_package_lifetime_conf(atof(argv[5]));
+        } else if (!strcmp(argv[4], "-bs")) {
+            set_buffer_size_conf(atof(argv[5]));
+        }
+    }
+    if (argv[2]) {
+        if (!strcmp(argv[2], "-pl")) {
+            set_package_lifetime_conf(atof(argv[3]));
+        } else if (!strcmp(argv[2], "-bs")) {
+            set_buffer_size_conf(atof(argv[3]));
+        }
+    }
+    set_port_conf(atoi(argv[1]));
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
         std::cout << "socket failed" << std::endl;
@@ -36,7 +53,6 @@ int main(int argc, char **argv)
         return 1;
     }
     std::cout << "Listening on port " << argv[1] << std::endl;
-    set_conf(argv);
     EventLoop *loop = new EventLoop(sock);
     loop->run();
     return 0;
