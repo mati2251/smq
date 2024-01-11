@@ -10,25 +10,25 @@ class PublisherNewLine() : Action {
         val smq = SMQ(host, port)
         smq.connect()
         val queue = smq.messageQueue(topic)
-        val res = queue.registerAsPublisher()
-        if (res.code == 0) {
-            println("Registered as publisher (topic: $topic)")
-        } else {
-            println("Failed to register as publisher")
+        try {
+            queue.registerAsPublisher()
+        } catch (e: Exception) {
+            println("Error while registering as publisher")
+            println(e.message)
             return
         }
         while (true) {
-            if (Thread.interrupted()) {
-                break
-            }
             var randomString = (1..10).map{ "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString { "" }
             randomString = randomString + "\n\n" + randomString
             println("Sending message: $randomString")
+            try {
             queue.sendMessage(randomString)
+            }
+            catch (e: Exception){
+                println("Error while sending message")
+                println(e.message)
+            }
             delay(1000)
         }
-        queue.unregisterAsPublisher()
-        println("Unregistered as publisher")
-        smq.disconnect()
     }
 }

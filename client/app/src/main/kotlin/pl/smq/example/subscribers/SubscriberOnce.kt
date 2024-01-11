@@ -11,10 +11,11 @@ class SubscriberOnce() : Action {
         val smq = SMQ(host, port)
         smq.connect()
         val queue = smq.messageQueue(topic, 10, BufferOverflow.DROP_OLDEST)
-        val res = queue.registerAsSubscriber()
-        if (res.code == 0) {
+        try {
+            queue.registerAsSubscriber()
             println("Registered as subscriber (topic: $topic)")
-        } else {
+        }
+        catch (e: Exception) {
             println("Failed to register as subscriber")
             return
         }

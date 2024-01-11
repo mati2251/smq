@@ -9,19 +9,17 @@ data class Request(
     var body: String,
 ) {
     fun serialize(): String {
-        body = body.replace("""\""", """\\""")
-        body = body.replace("\n", "\\n")
+        body = body.replace("\n", "\u0001")
         return "$type\n$id\n$topic\n$body\n"
     }
 
     companion object {
         fun deserialize(req: String): Request {
-            val lines = req.split("\n")
+            val lines = req.split(Regex("\n"))
             if (lines.size != 4) {
                 throw InvalidRequestException("Request should have 4 lines but has ${lines.size}")
             }
-            var body = lines[3].replace("""\\""".trimMargin(), """\""")
-            body = body.replace("\\n", "\n")
+            var body = lines[3].replace("\u0001", "\n")
             return Request(
                 RequestType.valueOf(lines[0]),
                 lines[1].toInt(),

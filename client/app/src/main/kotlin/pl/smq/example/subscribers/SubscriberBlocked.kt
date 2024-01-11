@@ -6,16 +6,16 @@ import pl.smq.example.Action
 import pl.smq.lib.SMQ
 import java.lang.Thread.sleep
 
-class SubscriberBlocked: Action {
+class SubscriberBlocked : Action {
     @OptIn(DelicateCoroutinesApi::class)
     override suspend fun execute(host: String, port: Int, topic: String) {
         val smq = SMQ(host, port)
         smq.connect()
         val queue = smq.messageQueue(topic, 1, BufferOverflow.SUSPEND)
-        val res = queue.registerAsSubscriber()
-        if (res.code == 0) {
-            println("Registered as subscriber (topic: $topic)")
-        } else {
+        try {
+            queue.registerAsSubscriber()
+        }
+        catch (e: Exception) {
             println("Failed to register as subscriber")
             return
         }

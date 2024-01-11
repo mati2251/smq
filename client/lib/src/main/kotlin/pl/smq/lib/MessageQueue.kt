@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import pl.smq.lib.exceptions.FullMessageBufferException
 import pl.smq.lib.exceptions.MessageQueueException
+import pl.smq.lib.exceptions.ResponseErrorException
 import pl.smq.lib.models.Request
 import pl.smq.lib.models.RequestType
 import pl.smq.lib.models.Response
@@ -29,7 +30,11 @@ class MessageQueue(
         if (messages.isClosedForSend) throw FullMessageBufferException()
         this.isSubscriber = true
         val requestId = action.registerAsSubscriber()
-        return SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        val res = SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        if (res.code != 0){
+            throw ResponseErrorException(res)
+        }
+        return res
     }
 
     suspend fun unregisterAsSubscriber(): Response {
@@ -37,7 +42,11 @@ class MessageQueue(
         if (messages.isClosedForSend) throw FullMessageBufferException()
         this.isSubscriber = false
         val requestId = action.unregisterAsSubscriber()
-        return SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        val res = SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        if (res.code != 0){
+            throw ResponseErrorException(res)
+        }
+        return res
     }
 
     suspend fun registerAsPublisher(): Response {
@@ -45,7 +54,11 @@ class MessageQueue(
         if (messages.isClosedForSend) throw FullMessageBufferException()
         this.isPublisher = true
         val requestId = action.registerAsPublisher()
-        return SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        val res = SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        if (res.code != 0){
+            throw ResponseErrorException(res)
+        }
+        return res
     }
 
     suspend fun unregisterAsPublisher(): Response {
@@ -53,7 +66,11 @@ class MessageQueue(
         if (messages.isClosedForSend) throw FullMessageBufferException()
         this.isPublisher = false
         val requestId = action.unregisterAsPublisher()
-        return SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        val res = SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        if (res.code != 0){
+            throw ResponseErrorException(res)
+        }
+        return res
     }
 
     suspend fun sendMessage(content: String): Response {
@@ -63,7 +80,11 @@ class MessageQueue(
         val requestId = SMQ.requestCounter++
         val request = Request(RequestType.MESSAGE, requestId, topic, content)
         writer.println(request.serialize())
-        return SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        val res = SMQ.responses.filter { it.requestId == requestId }.take(1).single()
+        if (res.code != 0){
+            throw ResponseErrorException(res)
+        }
+        return res
     }
 
     suspend fun readMessage(): String {

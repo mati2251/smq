@@ -40,6 +40,7 @@ fun printHelp(){
             2. One message publisher
             3. Publisher and subscriber (publish to topic and read from topic + "2")
             4. Send double new line in messages
+            5. Send random data from /dev/random (without delay between messages)
         """.trimIndent())
     return
 }

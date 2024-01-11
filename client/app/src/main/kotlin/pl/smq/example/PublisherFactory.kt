@@ -9,6 +9,7 @@ object PublisherFactory {
             2 -> PublisherOnce()
             3 -> PublisherAndSubscriber()
             4 -> PublisherNewLine()
+            5 -> PublisherDevRandom()
             else -> Publisher()
         }
     }

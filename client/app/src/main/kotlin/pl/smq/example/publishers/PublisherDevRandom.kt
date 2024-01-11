@@ -3,36 +3,35 @@ package pl.smq.example.publishers
 import kotlinx.coroutines.delay
 import pl.smq.example.Action
 import pl.smq.lib.SMQ
+import java.io.File
 
 @Suppress("OPT_IN_USAGE")
-class Publisher() : Action {
+class PublisherDevRandom() : Action {
     override suspend fun execute(host: String, port: Int, topic: String) {
         val smq = SMQ(host, port)
         smq.connect()
         val queue = smq.messageQueue(topic)
-        try {
-          queue.registerAsPublisher()
-          println("Registered as publisher (topic: $topic)")
-        }
-        catch (e: Exception){
-            println("Error while registering as publisher")
-            println(e.message)
+        val res = queue.registerAsPublisher()
+        if (res.code == 0) {
+            println("Registered as publisher (topic: $topic)")
+        } else {
+            println("Failed to register as publisher")
             return
         }
+        println("Sending messages...")
+        val file = File("/dev/random")
         while (true) {
             if (Thread.interrupted()) {
                 break
             }
-            val randomString = (1..10).map{ "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString()
-            println("Sending message: $randomString")
+            val cbuf = CharArray(10000)
+            file.reader().read(cbuf, 0, 10000)
             try {
-                queue.sendMessage(randomString)
-            }
-            catch (e: Exception){
-                println("Error while sending message")
+                queue.sendMessage(cbuf.joinToString(""))
+            } catch (e: Exception) {
                 println(e.message)
+                break
             }
-            delay(1000)
         }
         queue.unregisterAsPublisher()
         println("Unregistered as publisher")

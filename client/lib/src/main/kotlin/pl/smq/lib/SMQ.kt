@@ -55,7 +55,10 @@ class SMQ(private val host: String, private val port: Int) {
         this.readerJob = CoroutineScope(Dispatchers.IO).launch {
             var buf = ""
             while (true) {
-                if (!buf.contains("\n\n")) buf += reader.readLine() + "\n"
+                val cbuf = CharArray(512)
+                val size = reader.read(cbuf, 0, 512)
+                if (size == -1) continue
+                buf += cbuf.joinToString("").substring(0, size)
                 if (ExchangeUtils.isWholeExchange(buf)) {
                     val (exchange, rest) = ExchangeUtils.splitExchange(buf)
                     buf = rest
