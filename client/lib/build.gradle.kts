@@ -35,7 +35,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "pl.smq"
             artifactId = "smq-lib"
-            version = "0.0.2"
+            version = "0.1.0"
 
             from(components["java"])
         }
