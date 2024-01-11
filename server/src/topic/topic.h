@@ -3,19 +3,18 @@
 #include <string>
 #include "../actions/client-write-action/client-write-action.h"
 #include <mutex>
-#include "topic-exceptions.hpp"
-#include <algorithm>
+
 class Topic
 {
 public:
-    Topic(std::string name);
+    explicit Topic(const std::string &name);
     void addSubscriber(ClientWriteAction *client);
     void addPublisher(int fd);
     void removeSubscriber(int fd);
     void removePublisher(int fd);
-    void publish(request msg);
+    void publish(const request &msg);
     bool checkIfPublisher(int fd);
-    bool isEmpty();
+    bool isEmpty() const;
     std::string getName();
 private:
     std::mutex subscribers_mutex;

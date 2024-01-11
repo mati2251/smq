@@ -8,13 +8,13 @@
 class ServerState
 {
 public:
-    int efd;
+    int efd{};
     static ServerState &getInstance();
     void addClient(ClientWriteAction *client);
     void removeClient(int orginal_fd);
-    Topic *getTopic(std::string name);
-    Topic *addNewTopicIfNotExists(std::string topic_name);
-    void removeTopic(std::string name);
+    Topic *getTopic(const std::string &name);
+    Topic *addNewTopicIfNotExists(const std::string &topic_name);
+    void removeTopic(const std::string &name);
 
 private:
     std::mutex topics_mutex;
@@ -28,6 +28,6 @@ private:
     ~ServerState() = default;
     ServerState(const ServerState &) = delete;
     ServerState &operator=(const ServerState &) = delete;
-    Topic *getTopicWithoutLock(std::string name);
-    void removeTopicWithoutLock(std::string name);
+    Topic *getTopicWithoutLock(const std::string &name) const;
+    void removeTopicWithoutLock(const std::string& name);
 };

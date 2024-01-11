@@ -5,19 +5,19 @@
 #include <csignal>
 #include "configure/configure.h"
 
-int main(int argc, char **argv) {
+int main(const int argc, char **argv) {
     if (argc != 2 && argc != 4) {
         std::cout << "Usage: " << argv[0] << " <port> <buffer-size> <package-lifetime>" << std::endl;
         return 1;
     }
     if (argc == 4) {
         char *endptr;
-        unsigned int buffer_size = static_cast<unsigned int>(strtoul(argv[2], &endptr, 10));
+        const auto buffer_size = static_cast<unsigned int>(strtoul(argv[2], &endptr, 10));
         if (errno != 0 || *endptr != '\0') {
             std::cout << "Usage: " << argv[0] << " <port> <buffer-size> <package-lifetime>" << std::endl;
             return 1;
         }
-        float package_lifetime = strtod(argv[3], &endptr);
+        const float package_lifetime = strtof(argv[3], &endptr);
         if (errno != 0 || *endptr != '\0') {
             std::cout << "Usage: " << argv[0] << " <port> <buffer-size> <package-lifetime>" << std::endl;
             return 1;
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
         set_buffer_size_conf(0);
         set_package_lifetime_conf(0);
     }
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    const int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
         std::cout << "socket failed" << std::endl;
     sockaddr_in addr = {
@@ -37,9 +37,9 @@ int main(int argc, char **argv) {
         .sin_addr = {htonl(INADDR_ANY)},
         .sin_zero = {0}
     };
-    const int one = 1;
+    constexpr int one = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
-    int err = bind(sock, (sockaddr *) &addr, sizeof(addr));
+    int err = bind(sock, reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
     if (err < 0) {
         std::cout << "Error binding socket" << std::endl;
         return 1;
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
         return 1;
     }
     std::cout << "Listening on port " << argv[1] << std::endl;
-    EventLoop *loop = new EventLoop(sock);
+    auto *loop = new EventLoop(sock);
     loop->run();
     return 0;
 }

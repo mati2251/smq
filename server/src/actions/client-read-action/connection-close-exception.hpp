@@ -1,10 +1,10 @@
 #pragma once
 #include <exception>
 
-class ConnectionCloseException : public std::exception {
+class ConnectionCloseException final : public std::exception {
     public:
-    ConnectionCloseException() {}
-    const char *what() const throw() {
+    ConnectionCloseException() = default;
+     const char *what() const noexcept override {
         return "Connection closed";
     }
 };

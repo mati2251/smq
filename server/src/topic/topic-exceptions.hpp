@@ -2,10 +2,10 @@
 #include <string>
 #include <exception>
 
-class TopicNotFoundException : public std::exception
+class TopicNotFoundException final : public std::exception
 {
 public:
-    TopicNotFoundException(const std::string &topic) {
+    explicit TopicNotFoundException(const std::string &topic) {
         this->msg = "Topic " + topic + " not found";
     }
     const char *what() const noexcept override
@@ -16,7 +16,7 @@ private:
     std::string msg;
 };
 
-class ClientNotPublisherException : public std::exception
+class ClientNotPublisherException final : public std::exception
 {
 public:
     ClientNotPublisherException(const int &client, const std::string &topic) {
@@ -30,7 +30,7 @@ private:
     std::string msg;
 };
 
-class ClientNotSubscriberException : public std::exception
+class ClientNotSubscriberException final : public std::exception
 {
 public:
     ClientNotSubscriberException(const int &client, const std::string &topic) {
@@ -44,7 +44,7 @@ private:
     std::string msg;
 };
 
-class ClientAlreadySubscriberException : public std::exception
+class ClientAlreadySubscriberException final : public std::exception
 {
 public:
     ClientAlreadySubscriberException(const int &client, const std::string &topic) {
@@ -58,7 +58,7 @@ private:
     std::string msg;
 };
 
-class ClientAlreadyPublisherException : public std::exception
+class ClientAlreadyPublisherException final : public std::exception
 {
 public:
     ClientAlreadyPublisherException(const int &client, const std::string &topic) {
@@ -72,7 +72,7 @@ private:
     std::string msg;
 };
 
-class NoSubribersException : public std::exception {
+class NoSubribersException final : public std::exception {
 public:
     const char *what() const noexcept override
     {
