@@ -14,8 +14,7 @@ class SubscriberBlocked : Action {
         val queue = smq.messageQueue(topic, 1, BufferOverflow.SUSPEND)
         try {
             queue.registerAsSubscriber()
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("Failed to register as subscriber")
             return
         }

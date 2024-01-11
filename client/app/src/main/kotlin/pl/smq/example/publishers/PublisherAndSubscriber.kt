@@ -5,7 +5,7 @@ import kotlinx.coroutines.delay
 import pl.smq.example.Action
 import pl.smq.lib.SMQ
 
-class PublisherAndSubscriber: Action {
+class PublisherAndSubscriber : Action {
     @OptIn(DelicateCoroutinesApi::class)
     override suspend fun execute(host: String, port: Int, topic: String) {
         val smq = SMQ(host, port)
@@ -17,20 +17,18 @@ class PublisherAndSubscriber: Action {
             println("Registered as subscriber (topic: $topic)")
             queue.registerAsPublisher()
             println("Registered as publisher (topic: $topic)")
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             println("Error while registering")
             println(e.message)
             return
         }
         queue2.addMessageListener { println(it) }
         while (true) {
-            val randomString = (1..10).map{ "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString("")
+            val randomString = (1..10).map { "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString("")
             println("Sending message: $randomString")
             try {
-            queue.sendMessage(randomString)
-            }
-            catch (e: Exception) {
+                queue.sendMessage(randomString)
+            } catch (e: Exception) {
                 println("Error while sending message")
                 println(e.message)
             }

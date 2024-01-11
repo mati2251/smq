@@ -18,13 +18,12 @@ class PublisherNewLine() : Action {
             return
         }
         while (true) {
-            var randomString = (1..10).map{ "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString { "" }
+            var randomString = (1..10).map { "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString { "" }
             randomString = randomString + "\n\n" + randomString
             println("Sending message: $randomString")
             try {
-            queue.sendMessage(randomString)
-            }
-            catch (e: Exception){
+                queue.sendMessage(randomString)
+            } catch (e: Exception) {
                 println("Error while sending message")
                 println(e.message)
             }

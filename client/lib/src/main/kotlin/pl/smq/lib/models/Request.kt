@@ -19,7 +19,7 @@ data class Request(
             if (lines.size != 4) {
                 throw InvalidRequestException("Request should have 4 lines but has ${lines.size}")
             }
-            var body = lines[3].replace("\u0001", "\n")
+            val body = lines[3].replace("\u0001", "\n")
             return Request(
                 RequestType.valueOf(lines[0]),
                 lines[1].toInt(),

@@ -14,8 +14,7 @@ class SubscriberOnce() : Action {
         try {
             queue.registerAsSubscriber()
             println("Registered as subscriber (topic: $topic)")
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("Failed to register as subscriber")
             return
         }

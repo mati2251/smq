@@ -1,6 +1,5 @@
 package pl.smq.example.publishers
 
-import kotlinx.coroutines.delay
 import pl.smq.example.Action
 import pl.smq.lib.SMQ
 import java.io.File
