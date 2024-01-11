@@ -2,28 +2,21 @@
 
 #include <queue>
 #include "../event-action.h"
-#include <csignal>
-#include <errno.h>
-#include <string.h>
 #include <mutex>
 #include "../../structs/request.h"
 #include "../../structs/response.h"
 #include "../../structs/package.h"
-#include "../../configure/configure.h"
-#include "../../request-util/serialization/serialization.h"
-#include <fcntl.h>
-#include "full-buffer-exception.hpp"
 
-class ClientWriteAction : public EventAction
+class ClientWriteAction final : public EventAction
 {
 public:
    ClientWriteAction(int fd, int efd);
-   ~ClientWriteAction();
+   ~ClientWriteAction() override;
    void action() override;
-   void sendExchange(std::queue<package> *data);
+   void sendExchange(std::queue<package> *data) const;
    void addToEpollIfNotExists();
-   void addMessage(request req);
-   void addResponse(response res);
+   void addMessage(const request &req);
+   void addResponse(const response &res);
    int orginal_fd;
 private:
    std::mutex data_mtx;

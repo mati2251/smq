@@ -2,20 +2,18 @@
 
 #include "../../structs/request.h"
 #include "../handler.h"
-#include <iostream>
-#include "action-exception.hpp"
-#include "../../topic/topic.h"
+
 #include "../../server-state/server-state.h"
 
 class ActionHandler : public Handler
 {
 public:
-    void handle(request req);
-    void setEfd(int efd);
+    void handle(request req) override;
+    void setEfd(int efd) override;
 private:
-    void hanldeSubsribeAction(request act);
-    void handleUnsubscribeAction(request act);
-    void handlePublishAction(request act);
-    void handleUnpublishAction(request act);
+    void hanldeSubsribeAction(const request &act);
+    void handleUnsubscribeAction(const request &act);
+    void handlePublishAction(const request &act);
+    void handleUnpublishAction(const request& act);
     ClientWriteAction *getClientWriteAction(int client_id);
 };

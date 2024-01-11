@@ -1,10 +1,10 @@
 #pragma once
 #include <exception>
 
-class ActionUnknownException : public std::exception {
+class ActionUnknownException final : public std::exception {
     public:
-    ActionUnknownException() {}
-    const char *what() const throw() {
+    ActionUnknownException() = default;
+    const char *what() const noexcept override {
         return "Action exception: Unknown action";
     }
 };

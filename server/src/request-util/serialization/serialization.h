@@ -3,9 +3,8 @@
 #include <string>
 #include "../../structs/response.h"
 #include "../../structs/request.h"
-#include "../request-util.h"
 
-std::string serializiRequest(const request req);
+std::string serializiRequest(const request &req);
 
 std::string serializeResponse(const response &resp);
 

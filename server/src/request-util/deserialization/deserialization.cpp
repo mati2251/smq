@@ -1,11 +1,11 @@
 #include "deserialization.h"
+#include "deserialization-exception.hpp"
+#include "../request-util.h"
 
-std::pair<std::string, std::string> splitToTwice(const std::string &str, std::string delim)
-{
+std::pair<std::string, std::string> splitToTwice(const std::string &str, const std::string &delim) {
     std::pair<std::string, std::string> result;
-    size_t pos = str.find(delim);
-    if (pos == std::string::npos)
-    {
+    const size_t pos = str.find(delim);
+    if (pos == std::string::npos) {
         throw DeserializationException("Split error");
     }
     result.first = str.substr(0, pos);
@@ -13,8 +13,7 @@ std::pair<std::string, std::string> splitToTwice(const std::string &str, std::st
     return result;
 }
 
-request deserializeRequest(const std::string &req_str)
-{
+request deserializeRequest(const std::string &req_str) {
     request result;
     auto split_result = splitToTwice(req_str, "\n");
     result.type = getRequestType(split_result.first);

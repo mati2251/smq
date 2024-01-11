@@ -2,14 +2,13 @@
 
 #include "../../structs/request.h"
 #include "../handler.h"
-#include <iostream>
-#include "../../actions/client-write-action/client-write-action.h"
-#include "../../server-state/server-state.h"
-#include "../../topic/topic.h"
 
-class MessageHandler : public Handler
+#include "../../server-state/server-state.h"
+
+
+class MessageHandler final : public Handler
 {
 public:
-    void handle(request req);
-    void setEfd(int efd);
+    void handle(request req) override;
+    void setEfd(int efd) override;
 };

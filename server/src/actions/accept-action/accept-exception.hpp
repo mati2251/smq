@@ -1,13 +1,11 @@
 #pragma once
 #include <exception>
-#include <string>
 
-class AcceptException : public std::exception
-{
+class AcceptException final : public std::exception {
 public:
-    AcceptException() {}
-    const char *what() const throw()
-    {
+    AcceptException() = default;
+
+    const char *what() const noexcept override {
         return "AcceptException";
     }
 };

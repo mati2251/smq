@@ -2,9 +2,9 @@
 
 #include <exception>
 
-class InvalidRequestException : public std::exception {
+class InvalidRequestException final : public std::exception {
     public:
-    const char * what () const throw () {
+     const char * what () const noexcept override {
         return "Invalid request";
     }
 };

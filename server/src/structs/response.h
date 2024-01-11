@@ -11,10 +11,11 @@ enum response_code{
     INVALID_REQUEST, // 6
     ACTION_UNKNOWN, // 7
     UNKNOWN_ERROR, // 8
-    FULL_BUFFER // 9
+    FULL_BUFFER, // 9
+    NO_SUBSCRIBERS // 10
 };
 
-struct response 
+struct response
 {
     response_code code;
     int request_id;
