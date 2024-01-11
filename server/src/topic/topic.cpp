@@ -21,7 +21,7 @@ void Topic::addSubscriber(ClientWriteAction *client)
 void Topic::addPublisher(int fd)
 {
     std::lock_guard<std::mutex> lock(this->publishers_mutex);
-    this->publishers.count(fd) == 0 ? this->publishers.insert(fd) : throw ClientAlreadyPublisherException(fd, this->name);  
+    this->publishers.count(fd) == 0 ? this->publishers.insert(fd) : throw ClientAlreadyPublisherException(fd, this->name);
     std::cout << "Client " << fd << " register as publisher to " << this->name << std::endl;
 }
 
@@ -51,6 +51,9 @@ void Topic::removePublisher(int fd)
 void Topic::publish(request msg)
 {
     std::lock_guard<std::mutex> lock(this->subscribers_mutex);
+    if (this->subscribers.size() == 0) {
+        throw NoSubribersException();
+    }
     for (auto client : this->subscribers)
     {
         client->addMessage(msg);

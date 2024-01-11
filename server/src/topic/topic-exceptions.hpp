@@ -71,3 +71,11 @@ public:
 private:
     std::string msg;
 };
+
+class NoSubribersException : public std::exception {
+public:
+    const char *what() const noexcept override
+    {
+        return "No subscribers to topic, message not sent";
+    }
+};

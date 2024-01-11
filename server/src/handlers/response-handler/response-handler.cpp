@@ -48,6 +48,9 @@ void ResponseHandler::handle(request req, std::exception &e)
     {
         res.code = response_code::FULL_BUFFER;
     }
+    catch (NoSubribersException &_) {
+        res.code = response_code::NO_SUBSCRIBERS;
+    }
     catch (std::exception &_)
     {
         res.code = response_code::UNKNOWN_ERROR;

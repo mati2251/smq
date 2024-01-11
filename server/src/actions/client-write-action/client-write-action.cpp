@@ -42,7 +42,7 @@ void ClientWriteAction::action()
 void ClientWriteAction::sendExchange(std::queue<package> *data)
 {
     package exchange = data->front();
-    if( (((double)(clock() - exchange.time))/CLOCKS_PER_SEC) < get_package_lifetime_conf()){
+    if( (((double)(clock() - exchange.time))/CLOCKS_PER_SEC) < get_package_lifetime_conf() || get_package_lifetime_conf() == -1){
         size_t size = write(fd, const_cast<char *>(exchange.s.c_str()), exchange.s.size());
         if (size == (size_t)-1)
         {
@@ -56,6 +56,7 @@ void ClientWriteAction::sendExchange(std::queue<package> *data)
         else
         {
             data->front().s = exchange.s.substr(size);
+            data->front().time = clock();
         }
     } else {
         std::cout << "Package lifetime was violated. Package ignored" << std::endl;
@@ -78,8 +79,7 @@ void ClientWriteAction::addToEpollIfNotExists()
 
 void ClientWriteAction::addMessage(request req)
 {
-    if (get_buffer_size_conf() >= requests.size()){
-        std::cout << requests.size() << std::endl;
+    if (get_buffer_size_conf() >= requests.size() || get_buffer_size_conf() == -1){
         package pack;
         pack.s = serialize(req);
         pack.time = clock();
