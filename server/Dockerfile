@@ -7,7 +7,7 @@ RUN <<EOF
     && export CXX=/usr/bin/clang++ \
     mkdir build \
     && cd build \
-    && cmake .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release .. \
     && make \
     && cd .. \
 EOF
