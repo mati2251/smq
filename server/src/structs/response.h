@@ -10,7 +10,8 @@ enum response_code{
     CLIENT_ALREADY_SUBSCRIBER, // 5
     INVALID_REQUEST, // 6
     ACTION_UNKNOWN, // 7
-    UNKNOWN_ERROR // 8`
+    UNKNOWN_ERROR, // 8
+    FULL_BUFFER // 9
 };
 
 struct response 
