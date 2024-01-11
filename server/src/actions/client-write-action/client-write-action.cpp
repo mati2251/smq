@@ -78,12 +78,17 @@ void ClientWriteAction::addToEpollIfNotExists()
 
 void ClientWriteAction::addMessage(request req)
 {
-    package pack;
-    pack.s = serialize(req);
-    pack.time = clock();
-    std::lock_guard<std::mutex> lock(this->data_mtx);
-    this->requests.push(pack);
-    this->addToEpollIfNotExists();
+    if (get_buffer_size_conf() >= requests.size()){
+        std::cout << requests.size() << std::endl;
+        package pack;
+        pack.s = serialize(req);
+        pack.time = clock();
+        std::lock_guard<std::mutex> lock(this->data_mtx);
+        this->requests.push(pack);
+        this->addToEpollIfNotExists();
+    } else {
+        throw FullBufferException();
+    }
 }
 
 void ClientWriteAction::addResponse(response res)

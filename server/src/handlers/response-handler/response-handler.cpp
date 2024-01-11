@@ -44,6 +44,10 @@ void ResponseHandler::handle(request req, std::exception &e)
     {
         res.code = response_code::CLIENT_NOT_PUBLISHER;
     }
+    catch (FullBufferException &_)
+    {
+        res.code = response_code::FULL_BUFFER;
+    }
     catch (std::exception &_)
     {
         res.code = response_code::UNKNOWN_ERROR;

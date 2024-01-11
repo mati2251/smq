@@ -12,6 +12,7 @@
 #include "../../configure/configure.h"
 #include "../../request-util/serialization/serialization.h"
 #include <fcntl.h>
+#include "full-buffer-exception.hpp"
 
 class ClientWriteAction : public EventAction
 {
