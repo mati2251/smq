@@ -1,4 +1,5 @@
 #include "client-write-action.h"
+#include <climits>
 
 ClientWriteAction::ClientWriteAction(int fd, int efd) : EventAction(dup(fd), efd)
 {
@@ -43,13 +44,13 @@ void ClientWriteAction::sendExchange(std::queue<package> *data)
 {
     package exchange = data->front();
     if( (((double)(clock() - exchange.time))/CLOCKS_PER_SEC) < get_package_lifetime_conf() || get_package_lifetime_conf() == 0){
-        size_t size = write(fd, const_cast<char *>(exchange.s.c_str()), exchange.s.size());
-        if (size == (size_t)-1)
+        int size = write(fd, const_cast<char *>(exchange.s.c_str()), exchange.s.size());
+        if (size == -1 )
         {
-            std::cerr << "write: ClientWriteAction" << std::endl;
-            std::cerr << strerror(errno) << std::endl;
+            std::cerr << "Error message write" << std::endl;
+            return;
         }
-        if (size == exchange.s.size())
+        if ((size_t)size == exchange.s.size())
         {
             data->pop();
         }
