@@ -11,16 +11,22 @@ int main(int argc, char **argv) {
         return 1;
     }
     if (argc == 4) {
-        int buffer_size = static_cast<int>(strtod(argv[2], nullptr));
-        float package_lifetime = static_cast<float>(strtod(argv[3], nullptr));
-        if (buffer_size == 0 || package_lifetime == 0) {
-            std::cout << "Warnning: package lifetime or buffer set to 0" << std::endl;
+        char *endptr;
+        unsigned int buffer_size = static_cast<unsigned int>(strtoul(argv[2], &endptr, 10));
+        if (errno != 0 || *endptr != '\0') {
+            std::cout << "Usage: " << argv[0] << " <port> <buffer-size> <package-lifetime>" << std::endl;
+            return 1;
+        }
+        float package_lifetime = strtod(argv[3], &endptr);
+        if (errno != 0 || *endptr != '\0') {
+            std::cout << "Usage: " << argv[0] << " <port> <buffer-size> <package-lifetime>" << std::endl;
+            return 1;
         }
         set_buffer_size_conf(buffer_size);
         set_package_lifetime_conf(package_lifetime);
     } else {
-        set_buffer_size_conf(-1);
-        set_package_lifetime_conf(-1);
+        set_buffer_size_conf(0);
+        set_package_lifetime_conf(0);
     }
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)

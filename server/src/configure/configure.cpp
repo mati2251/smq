@@ -13,7 +13,7 @@ void set_package_lifetime_conf(float package_lifetime){
         conf.package_lifetime = package_lifetime;
 }
 
-void set_buffer_size_conf(int buffer_size){
+void set_buffer_size_conf(unsigned int buffer_size){
     conf.buffer_size = buffer_size;
 }
 
