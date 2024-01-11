@@ -1,8 +1,13 @@
 #include <catch2/catch_test_macros.hpp>
 #include "../../src/structs/request.h"
 #include "../../src/request-util/deserialization/deserialization.h"
+#include "../../src/request-util/deserialization/deserialization-exception.hpp"
 
-TEST_CASE("request deserialization", "[deserialization]") {
+#include "catch2/internal/catch_compiler_capabilities.hpp"
+#include "catch2/internal/catch_test_registry.hpp"
+
+TEST_CASE("request deserialization", "[deserialization]")
+ {
     std::string req_str = "MESSAGE\n1\ntopic\ncontent\n\n";
     request req = deserializeRequest(req_str);
     REQUIRE(req.type == request_type::MESSAGE);
