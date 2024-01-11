@@ -23,7 +23,9 @@ class Publisher() : Action {
             }
             val randomString = (1..10).map{ "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString()
             println("Sending message: $randomString")
-            queue.sendMessage(randomString)
+            
+            val res1 = queue.sendMessage(randomString)
+            println(res1);
             delay(1000)
         }
         queue.unregisterAsPublisher()
