@@ -11,6 +11,5 @@ RUN <<EOF
     && make \
     && cd .. \
 EOF
-ENV port 3000
-EXPOSE $port
-CMD /smq/build/smq $port
+EXPOSE 3000
+ENTRYPOINT ["/smq/build/smq", "3000"]
