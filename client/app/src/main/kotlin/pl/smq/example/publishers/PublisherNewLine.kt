@@ -18,7 +18,7 @@ class PublisherNewLine() : Action {
             return
         }
         while (true) {
-            var randomString = (1..10).map { "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString { "" }
+            var randomString = (1..10).map { "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.jointToString()
             randomString = randomString + "\n\n" + randomString
             println("Sending message: $randomString")
             try {
