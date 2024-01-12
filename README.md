@@ -3,7 +3,7 @@ Simple Message Queue created for the purpose of learning about tcp sockets and m
 ## Running
 The server can be run using docker:
 ```bash
-docker  -p 3000:3000 --rm run ghcr.io/mati2251/smq-server:latest 
+docker run -p 3000:3000 --rm ghcr.io/mati2251/smq-server:latest 
 ```
 The client example can be run using docker too:
 ```bash
