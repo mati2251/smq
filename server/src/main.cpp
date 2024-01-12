@@ -5,6 +5,8 @@
 #include <csignal>
 #include "configure/configure.h"
 
+EventLoop *loop;
+
 int main(const int argc, char **argv) {
     if (argc != 2 && argc != 4) {
         std::cout << "Usage: " << argv[0] << " <port> <buffer-size> <package-lifetime>" << std::endl;
@@ -39,6 +41,7 @@ int main(const int argc, char **argv) {
     };
     constexpr int one = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+    signal(SIGPIPE, SIG_IGN);
     int err = bind(sock, reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
     if (err < 0) {
         std::cout << "Error binding socket" << std::endl;
@@ -50,7 +53,12 @@ int main(const int argc, char **argv) {
         return 1;
     }
     std::cout << "Listening on port " << argv[1] << std::endl;
-    auto *loop = new EventLoop(sock);
+    signal(SIGINT, [](int) {
+        loop->stop();
+        std::cout << "Server stopped" << std::endl;
+        exit(0);
+    });
+    loop = new EventLoop(sock);
     loop->run();
     return 0;
 }

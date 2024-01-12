@@ -45,7 +45,8 @@ void ClientWriteAction::sendExchange(std::queue<package> *data) const {
     if (static_cast<double>(clock() - time) / CLOCKS_PER_SEC < get_package_lifetime_conf() ||
         get_package_lifetime_conf() == 0) {
         if (const int size = write(fd, s.c_str(), s.size()); size == -1) {
-            std::cout << "Error message write" << std::endl;
+            std::cerr<< "Error message write" << std::endl;
+            std::cerr << strerror(errno) << std::endl;
         }
         else if (static_cast<size_t>(size) == s.size()) {
             data->pop();

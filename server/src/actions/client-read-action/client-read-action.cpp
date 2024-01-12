@@ -47,4 +47,5 @@ bool ClientReadAction::checkEndOfRequest() const {
 void ClientReadAction::closeConnection() const {
     close(this->fd);
     ServerState::getInstance().removeClient(this->fd);
+    delete this;
 }

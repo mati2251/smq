@@ -37,9 +37,10 @@ void EventLoop::run() {
 }
 
 void EventLoop::stop() {
-    for (auto &t: this->threads) {
-        if (t.joinable())
-            t.join();
+    for (auto &thread : this->threads) {
+        thread.detach();
     }
+    this -> threads.clear();
     close(this->epoll_fd);
+    close(this->sock);
 }
