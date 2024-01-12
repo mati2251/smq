@@ -5,9 +5,10 @@ The server can be run using docker:
 ```bash
 docker run -p 3000:3000 --rm ghcr.io/mati2251/smq-server:latest 
 ```
-The client example can be run using docker too:
+The client example can be run by java (min JRE 11): 
 ```bash
-docker run --rm ghcr.io/mati2251/smq-client:latest  
+java -jar path-to-jar
 ```
+![JAR avalible here](https://github.com/mati2251/smq/releases/)
 # License
 MIT
