@@ -24,7 +24,7 @@ class PublisherAndSubscriber : Action {
         }
         queue2.addMessageListener { println(it) }
         while (true) {
-            val randomString = (1..10).map { "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString("")
+            val randomString = (1..10).map { "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString("", "", "")
             println("Sending message: $randomString")
             try {
                 queue.sendMessage(randomString)

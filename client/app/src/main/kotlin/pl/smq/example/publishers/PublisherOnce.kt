@@ -16,7 +16,7 @@ class PublisherOnce() : Action {
             println(e.message)
             return
         }
-        val randomString = (1..10).map { "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString("")
+        val randomString = (1..10).map { "abcdefghijklmnopqrstuvwxyzABCD@$#*123456789".random() }.joinToString("", "", "")
         try {
             queue.sendMessage(randomString)
             println("Sent message: $randomString")

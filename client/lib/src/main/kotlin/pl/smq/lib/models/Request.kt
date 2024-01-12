@@ -9,13 +9,13 @@ data class Request(
     var body: String,
 ) {
     fun serialize(): String {
-        body = body.replace("\n", "\u0001")
+        body = body.replace("\n", "\r")
         return "$type\n$id\n$topic\n$body\n"
     }
 
     companion object {
         fun deserialize(req: String): Request {
-            val lines = req.split(Regex("\n"))
+            val lines = req.split("\n")
             if (lines.size != 4) {
                 throw InvalidRequestException("Request should have 4 lines but has ${lines.size}")
             }
